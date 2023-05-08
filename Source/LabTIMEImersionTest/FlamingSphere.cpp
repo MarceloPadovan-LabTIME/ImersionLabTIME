@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Components/TextRenderComponent.h"
 
 // Sets default values
 AFlamingSphere::AFlamingSphere()
@@ -33,6 +34,20 @@ AFlamingSphere::AFlamingSphere()
 	ParticulaDeFogo->SetupAttachment(EsferaVisual);
 	//Ativa o bool(flag) que indica que o efeito da particula deve auto iniciar.
 	ParticulaDeFogo->bAutoActivate = true;
+
+	TextoDeExibicao = CreateDefaultSubobject<UTextRenderComponent>(TEXT("Texto"));
+	TextoDeExibicao->SetupAttachment(EsferaVisual);
+	TextoDeExibicao->SetRelativeLocation(FVector(0.f, 0.f, 110.f));
+	TextoDeExibicao->SetHorizontalAlignment(EHTA_Center);
+	TextoDeExibicao->SetYScale(1.f);
+	TextoDeExibicao->SetXScale(1.f);
+	TextoDeExibicao->SetText(FText::FromString("C++ na Unreal"));
+	TextoDeExibicao->SetTextRenderColor(FColor::Red);
+	TextoDeExibicao->SetVisibility(true);
+	
+	OnActorBeginOverlap.AddDynamic(this, &AFlamingSphere::InicioSobreposicao);
+
+	OnActorEndOverlap.AddDynamic(this, &AFlamingSphere::FimSobreposicao);
 
 	//Localiza via código a StaticMesh que usaremos no componente EsferaVisual.
 	ConstructorHelpers::FObjectFinder<UStaticMesh>Esfera(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
@@ -72,5 +87,18 @@ void AFlamingSphere::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AFlamingSphere::InicioSobreposicao(AActor* OverlappedActor, AActor* OtherActor)
+{
+	FString StringDeSaida;
+	StringDeSaida = "Sobrepondo " + OtherActor->GetName() + " !";
+
+	TextoDeExibicao->SetText(FText::FromString(StringDeSaida));
+}
+
+void AFlamingSphere::FimSobreposicao(AActor* OverlappedActor, AActor* OtherActor)
+{
+	TextoDeExibicao->SetText(FText::FromString("Parou de Sobrepor"));
 }
 
