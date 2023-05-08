@@ -27,8 +27,30 @@ private:
 		UParticleSystemComponent* ParticulaDeFogo;
 
 protected:
-	UPROPERTY(EditAnywhere);
+	
+	UPROPERTY(EditAnywhere, Category = "Variaveis")
+		bool VariavelEditAnwhere;
 
+	UPROPERTY(VisibleAnywhere, Category = "Variaveis")
+		float VariavelVisibleAnywhere;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Variaveis")
+		float VariavelEditDefaltsOnly;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Variaveis")
+		float VariavelVisibleDefaultsOnly;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Variaveis")
+		FVector VariavelBlueprintReadWrite = FVector(0.f, 0.f, -180.f);
+
+	UPROPERTY(BlueprintReadOnly, Category = "Variaveis")
+		FString VariavelBlueprintReadOnly = "Texto Blueprint";
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variaveis")
+		FString VariavelEditAnywhereBlueprintReadWrite = "Texto Editavel";
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variaveis")
+		FString VariavelEditAnywhereBlueprintReadOnly = "Texto apenas visivel";
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
