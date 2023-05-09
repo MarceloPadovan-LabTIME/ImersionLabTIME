@@ -52,14 +52,33 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variaveis")
 	FString VariavelEditAnywhereBlueprintReadOnly = "Texto apenas visivel";
 
-	//Macro UFUNCTION
-	UFUNCTION()
+
+	// Macro UFUNCTION: define funcoes e pode receber parametros.
+	UFUNCTION(BlueprintNativeEvent, Category = "Sobreposicoes")
 	void InicioSobreposicao(AActor* OverlappedActor, AActor* OtherActor);
 
-	UFUNCTION()
+	void InicioSobreposicao_Implementation(AActor* OverlappedActor,
+		AActor* OtherActor);
+
+	// BlueprintNativeEvent:
+	// Cria uma funçao que será implementada na Blueprint,
+	// Entetando, existe uma declaração implementada no código C++.
+	// Caso essa funçao nao seja customizada dentro do editor da Blueprint,
+	// A funçao declarada no codigo será executada como padrao.
+	UFUNCTION(BlueprintNativeEvent, Category = "Sobreposicoes")
 	void FimSobreposicao(AActor* OverlappedActor, AActor* OtherActor);
 
-	UPROPERTY(EditAnywhere, Category = "Texto")
+	// Esta função será chamada caso a blueprint não a sobreescreva.
+	void FimSobreposicao_Implementation(AActor* OverlappedActor,
+		AActor* OtherActor);
+
+	// BlueprintImplementableEvent:
+	// Cria uma função que será implementada na blueprint.
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent,
+		Category = "Sobreposicoes")
+	void MyImplementableEvent();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Texto")
 	class UTextRenderComponent* TextoDeExibicao;
 
 	// Called when the game starts or when spawned

@@ -129,18 +129,24 @@ void AFlamingSphere::Tick(float DeltaTime)
 
 }
 
-void AFlamingSphere::InicioSobreposicao(AActor* OverlappedActor,
+// Essa função só será chamada caso não haja sobreescrição
+// na Blueprint criada a partir desta classe.
+void AFlamingSphere::InicioSobreposicao_Implementation(AActor* OverlappedActor,
 	AActor* OtherActor)
 {
 	FString StringDeSaida;
-	StringDeSaida = "Sobrepondo " + OtherActor->GetName() + " !";
+	StringDeSaida = "Sobrepondo via C++, o ator: " + OtherActor->GetName() + " !";
 
 	TextoDeExibicao->SetText(FText::FromString(StringDeSaida));
 }
 
-void AFlamingSphere::FimSobreposicao(AActor* OverlappedActor,
+
+// Essa função só será chamada caso não haja sobreescrição
+// na Blueprint criada a partir desta classe.
+void AFlamingSphere::FimSobreposicao_Implementation(AActor* OverlappedActor,
 	AActor* OtherActor)
 {
-	TextoDeExibicao->SetText(FText::FromString("Parou de Sobrepor"));
+	TextoDeExibicao->SetText(FText::FromString("Parou de Sobrepor, via C++"));
 }
+
 
