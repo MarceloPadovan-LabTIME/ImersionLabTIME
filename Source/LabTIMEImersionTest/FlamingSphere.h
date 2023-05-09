@@ -52,13 +52,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variaveis")
 	FString VariavelEditAnywhereBlueprintReadOnly = "Texto apenas visivel";
 
+	//Macro UFUNCTION
 	UFUNCTION()
-		void InicioSobreposicao(AActor* OverlappedActor, AActor* OtherActor);
+	void InicioSobreposicao(AActor* OverlappedActor, AActor* OtherActor);
 
 	UFUNCTION()
-		void FimSobreposicao(AActor* OverlappedActor, AActor* OtherActor);
+	void FimSobreposicao(AActor* OverlappedActor, AActor* OtherActor);
 
-	//Foward Declaration
+	UPROPERTY(EditAnywhere, Category = "Texto")
 	class UTextRenderComponent* TextoDeExibicao;
 
 	// Called when the game starts or when spawned
