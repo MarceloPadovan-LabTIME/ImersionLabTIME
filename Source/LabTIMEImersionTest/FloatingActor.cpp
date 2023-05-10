@@ -6,7 +6,8 @@
 // Sets default values
 AFloatingActor::AFloatingActor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this actor to call Tick() every frame.  You can turn this off to 
+	// improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	executionTime = 0.0f;
@@ -19,6 +20,26 @@ AFloatingActor::AFloatingActor()
 void AFloatingActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (bIsTarget)
+	{
+		// Cria variavel que recebe um numero aleatório.
+		float RandomRotation = FMath::RandRange(MinRotation, MaxRotation);
+		float RandomPosition = FMath::RandRange(MinPosition, MaxPosition);
+		float RandomScale = FMath::RandRange(MinScale, MaxScale);
+
+		// Cria uma variavel de vetor para armazenar os valores aleatórios.
+		const FRotator RngRot = FRotator(RandomRotation);
+		const FVector RngPos = FVector(RandomPosition);
+		const FVector RngScl = FVector(RandomScale);
+
+		// Cria uma variavel do tipo FTransform que recebe as Structs de
+		// Rotação, Posição e Escala de Objetos.
+		FTransform newTransform = FTransform(RngRot, RngPos, RngScl);
+		
+		//Estabelece uma nova Transform ao ator.
+		AddActorLocalTransform(newTransform);
+	}
 	
 }
 
@@ -27,18 +48,15 @@ void AFloatingActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Rotation
+	AddActorLocalRotation(FRotator(0, 50, 0) * DeltaTime * RotationSpeed);
+
+	// Floating
 	newLocation = this->GetActorLocation();
-	UE_LOG(LogTemp, Warning, TEXT("Nova Localização: %s\n"), *newLocation.ToString());
-
-	deltaHeight = FMath::Sin(executionTime + DeltaTime) - FMath::Sin(executionTime);
-	UE_LOG(LogTemp, Warning, TEXT("AlturaDelta: %f\n"), deltaHeight);
-
+	deltaHeight = FMath::Sin(executionTime + DeltaTime) 
+		- FMath::Sin(executionTime);
 	newLocation.Z += deltaHeight * 20.0f;
-	UE_LOG(LogTemp, Warning, TEXT("Nova Localização: %s\n"), *newLocation.ToString());
-
 	executionTime += DeltaTime;
-	UE_LOG(LogTemp, Warning, TEXT("Tempo de Execução: %f\n"), executionTime);
-
 	this->SetActorLocation(newLocation);
 
 }
