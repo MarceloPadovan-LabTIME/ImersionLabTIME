@@ -15,9 +15,30 @@ public:
 	// Sets default values for this actor's properties
 	AAGranade();
 
+	// Declara a função EndPlay que vai sobrescrever o
+	// EndPlay de MeuGameModeTesteUdemy.
+	// "virtual" indica que é uma função polimórfica(polimosfismo)
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	FTimerHandle Temporizador, TimerDoSlowMotion;
+
+	class UAudioComponent* SomDaExplosao;
+
+	class UParticleSystemComponent* ExplosionEFX;
+
+	UFUNCTION()
+		void ExplodirGranada();
+
+	UFUNCTION()
+		void SlowMotion(float DilatacaoDoTempo);
+
+	UFUNCTION()
+		void RestaurarTempo();
+
 
 public:	
 	// Called every frame

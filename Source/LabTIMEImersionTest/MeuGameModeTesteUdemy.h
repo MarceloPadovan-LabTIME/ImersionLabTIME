@@ -17,5 +17,5 @@ class LABTIMEIMERSIONTEST_API AMeuGameModeTesteUdemy : public AGameModeBase
 public:
 	virtual void BeginPlay() override;
 
-	
+	virtual void StartPlay() override;
 };

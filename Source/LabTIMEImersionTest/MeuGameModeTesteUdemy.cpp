@@ -13,6 +13,16 @@
 #include "Engine/Engine.h"
 
 
+void AMeuGameModeTesteUdemy::StartPlay()
+{
+	Super::StartPlay();
+
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT(
+		//"Estou no Game Mode \n Granades Launcher!"));
+
+}
+
+
 // Game mode é uma classe que contém as regras e configurações do nosso jogo.
 // Cada level pode ter seu próprio GameMode.
 // Para isso em World Settings você pode sobrescrever o GameMode padrão.
@@ -31,8 +41,8 @@ void AMeuGameModeTesteUdemy::BeginPlay()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), 
 		ATargetPoint::StaticClass(), LocalGranades);
 
-	UE_LOG(LogTemp, Warning, TEXT("Num de Target Point Encontrados:  %d"),
-		LocalGranades.Num());
+	//UE_LOG(LogTemp, Warning, TEXT("Num de Target Point Encontrados:  %d"),
+		//LocalGranades.Num());
 
 	if (LocalGranades.Num() != 0)
 	{
@@ -44,8 +54,8 @@ void AMeuGameModeTesteUdemy::BeginPlay()
 			GetWorld()->SpawnActor<AAGranade>(It->GetActorLocation(),
 				It->GetActorRotation(), params);
 
-			GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Red, TEXT(
-				"Ator Gerado"));
+			//GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Red, TEXT(
+				//"Ator Gerado"));
 
 			UE_LOG(LogTemp, Warning, TEXT("Transform = %s"), 
 				*It->GetActorLocation().ToString());
