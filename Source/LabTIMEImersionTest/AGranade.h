@@ -31,6 +31,9 @@ protected:
 	class UParticleSystemComponent* ExplosionEFX;
 
 	UFUNCTION()
+		void RadialImpulse(float range, float force);
+
+	UFUNCTION()
 		void ExplodirGranada();
 
 	UFUNCTION()
@@ -44,6 +47,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Atributos")
+		float ExplosionRange = 1000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Atributos")
+		float ExplosionForce = 1000.f;
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Visual")
 	class UStaticMeshComponent* MalhaDoAtor;
@@ -51,4 +60,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Visual")
 	class USphereComponent* ColisorDoAtor;
 
+	
 };

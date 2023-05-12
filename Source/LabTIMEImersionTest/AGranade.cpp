@@ -12,6 +12,10 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Engine/Engine.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/StaticMeshActor.h"
+#include "EngineUtils.h"
+#include "UObject/UObjectIterator.h"
+#include "Components/SkeletalMeshComponent.h"
 
 
 // Sets default values
@@ -98,6 +102,41 @@ void AAGranade::Tick(float DeltaTime)
 
 }
 
+void AAGranade::RadialImpulse(float range, float force)
+{
+	for (TActorIterator<AStaticMeshActor>
+		ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Nome: %s"), *ActorItr->GetName(),
+			*ActorItr);
+
+		UStaticMeshComponent* RootComponentDoStaticMesh;
+
+		RootComponentDoStaticMesh = Cast<UStaticMeshComponent>(
+			ActorItr->GetRootComponent());
+
+		if (RootComponentDoStaticMesh)
+		{
+			if (RootComponentDoStaticMesh->Mobility == EComponentMobility::Movable)
+			{
+				RootComponentDoStaticMesh->SetSimulatePhysics(true);
+				RootComponentDoStaticMesh->AddRadialImpulse(GetActorLocation(),
+					range, force, ERadialImpulseFalloff::RIF_Linear, true);
+			}
+		}
+	}
+
+	for (TObjectIterator<USkeletalMeshComponent> It; It; ++It)
+	{
+		if (It->GetWorld() == GetWorld())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Name: %s Adress: %X \n"), *It->GetName(), *It);
+			It->SetSimulatePhysics(true);
+			It->AddRadialImpulse(GetActorLocation(), range, force, ERadialImpulseFalloff::RIF_Linear, true);
+		}
+	}
+}
+
 void AAGranade::ExplodirGranada()
 {
 	SetLifeSpan(5.5f);
@@ -105,6 +144,7 @@ void AAGranade::ExplodirGranada()
 	SlowMotion(0.05);
 	ExplosionEFX->ActivateSystem();
 	MalhaDoAtor->SetVisibility(false);
+	RadialImpulse(ExplosionRange, ExplosionForce);
 }
 
 void AAGranade::SlowMotion(float DilatacaoDoTempo)
