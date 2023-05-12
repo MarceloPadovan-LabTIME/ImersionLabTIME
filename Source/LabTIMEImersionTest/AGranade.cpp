@@ -16,6 +16,9 @@
 #include "EngineUtils.h"
 #include "UObject/UObjectIterator.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Animation/SkeletalMeshActor.h"
+#include "UObject/UObjectBaseUtility.h"
+#include "MainPlayer/MainPlayerCharacter.h"
 
 
 // Sets default values
@@ -117,7 +120,13 @@ void AAGranade::RadialImpulse(float range, float force)
 
 		if (RootComponentDoStaticMesh)
 		{
-			if (RootComponentDoStaticMesh->Mobility == EComponentMobility::Movable)
+			// Adicionar na condição:
+			// && (ActorItr->GetName() == FString("CadeiraEsquerda"))
+			// para verificar o nome do Ator/Objeto
+			// Adicionar na condição:
+			// && (ActorItr->ActorHasTag(FName("Cadeira")))
+			if (RootComponentDoStaticMesh->Mobility == 
+				EComponentMobility::Movable && (ActorItr->ActorHasTag(FName("Cadeira"))))
 			{
 				RootComponentDoStaticMesh->SetSimulatePhysics(true);
 				RootComponentDoStaticMesh->AddRadialImpulse(GetActorLocation(),
@@ -130,9 +139,27 @@ void AAGranade::RadialImpulse(float range, float force)
 	{
 		if (It->GetWorld() == GetWorld())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Name: %s Adress: %X \n"), *It->GetName(), *It);
-			It->SetSimulatePhysics(true);
-			It->AddRadialImpulse(GetActorLocation(), range, force, ERadialImpulseFalloff::RIF_Linear, true);
+			if (It->ComponentHasTag(FName("Playercpp")))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Name: %s Adress: %X \n"), 
+					*It->GetName(), *It);
+
+				ACharacter* OutroInimigo = Cast<ACharacter>(It->GetOwner());
+
+				UParticleSystemComponent* Particula = Cast<
+					UParticleSystemComponent>(OutroInimigo->GetComponentByClass(
+						UParticleSystemComponent::StaticClass()));
+
+				Particula->Activate(true);
+
+				It->SetSimulatePhysics(true);
+
+				It->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+				It->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+
+				It->AddRadialImpulse(GetActorLocation(), range, force,
+					ERadialImpulseFalloff::RIF_Linear, true);
+			}
 		}
 	}
 }

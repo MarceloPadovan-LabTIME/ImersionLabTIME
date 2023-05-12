@@ -48,7 +48,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Atributos")
-		float ExplosionRange = 1000.f;
+		float ExplosionRange = 5000.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Atributos")
 		float ExplosionForce = 1000.f;

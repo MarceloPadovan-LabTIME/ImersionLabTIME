@@ -24,9 +24,9 @@ void AFloatingActor::BeginPlay()
 	if (bIsTarget)
 	{
 		// Cria variavel que recebe um numero aleatório.
-		float RandomRotation = FMath::RandRange(MinRotation, MaxRotation);
-		float RandomPosition = FMath::RandRange(MinPosition, MaxPosition);
-		float RandomScale = FMath::RandRange(MinScale, MaxScale);
+		const float RandomRotation = FMath::RandRange(MinRotation, MaxRotation);
+		const float RandomPosition = FMath::RandRange(MinPosition, MaxPosition);
+		const float RandomScale = FMath::RandRange(MinScale, MaxScale);
 
 		// Cria uma variavel de vetor para armazenar os valores aleatórios.
 		const FRotator RngRot = FRotator(RandomRotation);

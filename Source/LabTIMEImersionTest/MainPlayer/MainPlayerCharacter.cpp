@@ -4,6 +4,7 @@
 #include "MainPlayerCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 
 AMainPlayerCharacter::AMainPlayerCharacter()
 {
@@ -18,6 +19,11 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	PrimaryActorTick.bCanEverTick = true;
+
+	GranadeEFX = CreateDefaultSubobject<UParticleSystemComponent>(FName("ParticleFX"));
+	GranadeEFX->bAutoActivate = false;
+	GranadeEFX->bAutoDestroy = false;
+	GranadeEFX->SetupAttachment((USceneComponent*)GetMesh());
 }
 
 void AMainPlayerCharacter::BeginPlay()
