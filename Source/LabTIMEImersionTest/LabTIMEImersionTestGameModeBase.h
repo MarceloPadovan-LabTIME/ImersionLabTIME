@@ -14,5 +14,10 @@ UCLASS()
 class LABTIMEIMERSIONTEST_API ALabTIMEImersionTestGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public:
+
+	// Construtor.
+	ALabTIMEImersionTestGameModeBase();
+
 };

@@ -15,14 +15,14 @@ AACaixa::AACaixa()
 	// improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	bDeuHit = false;
+
 	ColisorDoAtor = CreateDefaultSubobject<UBoxComponent>(
 		FName("Box Collider"));
 	ColisorDoAtor->SetSimulatePhysics(true);
 	ColisorDoAtor->SetNotifyRigidBodyCollision(true);
 	ColisorDoAtor->BodyInstance.SetCollisionProfileName("BlockAllDynamic");
 	RootComponent = ColisorDoAtor;
-
-	
 
 	MalhaDaCaixa = CreateDefaultSubobject<UStaticMeshComponent>(
 		FName("Malha da Caixa"));
@@ -38,22 +38,24 @@ AACaixa::AACaixa()
 	ParticulaHit->bAutoActivate = false;
 	ParticulaHit->SetupAttachment(RootComponent);
 
+	// Anexando a função OnComponentHit
+	ColisorDoAtor->OnComponentHit.AddDynamic(this,
+		&AACaixa::OcorreuHitNoComponente);
+
+	// Para anexar uma função ao proprio Objeto use "this".
+	this->OnActorHit.AddDynamic(this, &AACaixa::OcorreuHitNoAtor);
 }
 
 // Called when the game starts or when spawned
 void AACaixa::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	ColisorDoAtor->OnComponentHit.AddDynamic(this, 
-		&AACaixa::OcorreuHitNoComponente);
 }
 
 // Called every frame
 void AACaixa::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AACaixa::OcorreuHitNoComponente(UPrimitiveComponent* HitComponent, 
@@ -63,12 +65,37 @@ void AACaixa::OcorreuHitNoComponente(UPrimitiveComponent* HitComponent,
 	if ((OtherActor != nullptr)&& (OtherActor != this)&& (OtherComp != nullptr)
 		&& OtherActor->ActorHasTag(FName("DestBox")))
 	{
-		SomDoHit->Activate(true);
-		SomDoHit->Play(0);
-		ParticulaHit->Activate(true);
+		if (!bDeuHit)
+		{
+			SomDoHit->Activate(true);
+			SomDoHit->Play(0);
+			ParticulaHit->Activate(true);
 
-		OtherActor->Destroy();
+			bDeuHit = true;
+			OtherActor->Destroy();
+		}	
 	}
+}
+
+void AACaixa::OcorreuHitNoAtor(AActor* SelfActor, AActor* OtherActor, 
+	FVector NormalImpulse, const FHitResult& Hit)
+{
+	UE_LOG(LogTemp, Warning ,TEXT("Ator %s Bateu em: %s"), 
+		*SelfActor->GetName(), *OtherActor->GetName());
+
+	UE_LOG(LogTemp, Warning, TEXT("No local: %s"), 
+		*Hit.ImpactPoint.ToString());
+}
+
+// Ao contrário de OnActorHit e OnComponentHit este evento será chamado quando
+// ocorrer um hit sem a necessidade de anexarmos uma função delegate.
+void AACaixa::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, 
+	UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
+	FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, 
+		HitNormal, NormalImpulse, Hit);
+	UE_LOG(LogTemp, Error, TEXT("Notificacao de HIT Realizada!"));
 
 }
 

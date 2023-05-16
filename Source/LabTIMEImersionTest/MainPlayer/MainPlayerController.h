@@ -18,6 +18,8 @@ public:
 	/** Setup the player controller inputs */
 	virtual void SetupInputComponent() override;
 
+	void AtirarRayCast();
+
 private:
 	/** Request the main HUD to open the scoreboard widget */
 	void RequestOpenScoreBoard();

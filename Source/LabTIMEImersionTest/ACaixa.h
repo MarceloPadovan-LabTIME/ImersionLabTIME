@@ -35,10 +35,21 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Caixa")
 	class UParticleSystemComponent* ParticulaHit;
 
+	bool bDeuHit;
+
 	UFUNCTION()
 	void OcorreuHitNoComponente(UPrimitiveComponent* HitComponent, 
 		AActor* OtherActor, UPrimitiveComponent* OtherComp, 
 		FVector NormalImpulse, const FHitResult& Hit);
 
+	UFUNCTION()
+	void OcorreuHitNoAtor(AActor* SelfActor, AActor* OtherActor,
+		FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	virtual void NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other,
+		class UPrimitiveComponent* OtherComp, bool bSelfMoved, 
+		FVector HitLocation, FVector HitNormal, FVector NormalImpulse, 
+		const FHitResult& Hit) override;
 
 };
