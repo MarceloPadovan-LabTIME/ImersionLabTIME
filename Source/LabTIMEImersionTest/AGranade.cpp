@@ -88,7 +88,7 @@ void AAGranade::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SlowMotion(0.1f);
+	//SlowMotion(0.1f);
 
 	MalhaDoAtor->SetSimulatePhysics(true);
 	MalhaDoAtor->SetEnableGravity(true);
@@ -168,7 +168,7 @@ void AAGranade::ExplodirGranada()
 {
 	SetLifeSpan(5.5f);
 	SomDaExplosao->Play();
-	SlowMotion(0.05);
+	//SlowMotion(0.05);
 	ExplosionEFX->ActivateSystem();
 	MalhaDoAtor->SetVisibility(false);
 	RadialImpulse(ExplosionRange, ExplosionForce);

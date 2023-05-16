@@ -19,20 +19,11 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	PrimaryActorTick.bCanEverTick = true;
-
-	GranadeEFX = CreateDefaultSubobject<UParticleSystemComponent>(FName("ParticleFX"));
-	GranadeEFX->bAutoActivate = false;
-	GranadeEFX->bAutoDestroy = false;
-	GranadeEFX->SetupAttachment((USceneComponent*)GetMesh());
 }
 
 void AMainPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//Testes Marcelo:
-	GLog->Log("Minha Classe Curso C++ Unreal");
-	//Testes Marcelo.
 }
 
 void AMainPlayerCharacter::Tick(float DeltaTime)
