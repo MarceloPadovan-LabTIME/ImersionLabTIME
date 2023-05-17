@@ -23,10 +23,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	/** Called to bind functionality to input */
-	virtual void SetupPlayerInputComponent
-	(
-		class UInputComponent* PlayerInputComponent
-	) override;
+	virtual void SetupPlayerInputComponent(
+		class UInputComponent* PlayerInputComponent) override;
 
 	/** 
 	* Handles the forward movement of the character. 
@@ -44,6 +42,11 @@ public:
 	*/
 	void MoveCharacterRight(float AxisValue);
 
+
+	void MyCrouch();
+
+	void StandUp();
+
 protected:
 	/** Called when the game starts or when spawned */
 	virtual void BeginPlay() override;
@@ -53,5 +56,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, 
 		Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent = nullptr;
+
+	
 
 };
