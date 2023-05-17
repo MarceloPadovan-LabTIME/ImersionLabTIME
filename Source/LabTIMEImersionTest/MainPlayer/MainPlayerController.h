@@ -14,11 +14,21 @@ class LABTIMEIMERSIONTEST_API AMainPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+protected:
+
+	UPROPERTY()
+	FVector PlayerViewPointLoc;
+
+	UPROPERTY()
+	FRotator PlayerViewPointRot;
+
 public:
 	/** Setup the player controller inputs */
 	virtual void SetupInputComponent() override;
 
 	void AtirarRayCast();
+
+	virtual void Tick(float DeltaTime) override;
 
 private:
 	/** Request the main HUD to open the scoreboard widget */
