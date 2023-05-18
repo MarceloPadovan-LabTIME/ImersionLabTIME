@@ -7,6 +7,11 @@
 #include "Camera/CameraComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Character.h"
+#include "Engine/World.h"
+#include "LabTIMEImersionTest/Weapons/Base/AutomaticWeapon.h"
+#include "Engine/EngineTypes.h"
 
 AMainPlayerCharacter::AMainPlayerCharacter()
 {
@@ -23,6 +28,9 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
+	GetCharacterMovement()->AirControl = 0.05f;
+	GetCharacterMovement()->JumpZVelocity = 425.f;
+	GetCharacterMovement()->GravityScale = 1.5f;
 }
 
 void AMainPlayerCharacter::BeginPlay()
@@ -30,6 +38,8 @@ void AMainPlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
+	AAutomaticWeapon* PlayerPrimaryWeapon = GetWorld()->SpawnActor<AAutomaticWeapon>(BP_Weapon_AssaultRifle);
 }
 
 void AMainPlayerCharacter::Tick(float DeltaTime)
@@ -55,8 +65,17 @@ void AMainPlayerCharacter::SetupPlayerInputComponent
 		&APawn::AddControllerPitchInput);
 
 	// Bind the crouch and uncrouch action
-	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Pressed, this, &AMainPlayerCharacter::MyCrouch);
-	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Released, this, &AMainPlayerCharacter::StandUp);
+	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::MyCrouch);
+	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Released, this,
+		&AMainPlayerCharacter::StandUp);
+
+	// Bind the jump action
+	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, 
+		&AMainPlayerCharacter::MyJump);
+	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, 
+		&AMainPlayerCharacter::JumpNotAllowed);
+	
 
 }
 
@@ -80,5 +99,15 @@ void AMainPlayerCharacter::MyCrouch()
 void AMainPlayerCharacter::StandUp()
 {
 	UnCrouch();
+}
+
+void AMainPlayerCharacter::MyJump()
+{
+	bIsJumping = true;
+}
+
+void AMainPlayerCharacter::JumpNotAllowed()
+{
+	bIsJumping = false;
 }
 

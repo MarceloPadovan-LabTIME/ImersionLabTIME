@@ -42,10 +42,28 @@ public:
 	*/
 	void MoveCharacterRight(float AxisValue);
 
-
+	/** Handles the crouch action of the character */
 	void MyCrouch();
 
+	/** Handles the stand up action of the character */
 	void StandUp();
+
+	// Handles the jump action of the character.
+	void MyJump();
+
+	// Handles the jump state not allow to jump of the character.
+	// Ensures that player will not jump at inappropriate times.
+	void JumpNotAllowed();
+
+public:
+	// Flag for checking Jumping States.
+	UPROPERTY(BlueprintReadOnly, Category = "Jump")
+		bool bIsJumping;
+	
+	//
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+		TSubclassOf<class AAutomaticWeapon> BP_Weapon_AssaultRifle;
+
 
 protected:
 	/** Called when the game starts or when spawned */
@@ -56,7 +74,5 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, 
 		Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent = nullptr;
-
-	
 
 };

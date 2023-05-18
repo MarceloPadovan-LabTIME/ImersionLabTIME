@@ -2,10 +2,14 @@
 
 
 #include "WeaponBase.h"
+#include "Components/SkeletalMeshComponent.h"
 
 AWeaponBase::AWeaponBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	MalhaDaArma = CreateDefaultSubobject<USkeletalMeshComponent>(
+		FName("Malha Da Arma"));
 }
 
 void AWeaponBase::BeginPlay()
