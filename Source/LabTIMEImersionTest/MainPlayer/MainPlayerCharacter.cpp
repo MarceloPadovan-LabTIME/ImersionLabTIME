@@ -26,11 +26,13 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0, 0, 64.f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+	
 
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
 	GetCharacterMovement()->AirControl = 0.05f;
 	GetCharacterMovement()->JumpZVelocity = 425.f;
 	GetCharacterMovement()->GravityScale = 1.5f;
+	GetCharacterMovement()->CrouchedHalfHeight = 70.f;
 }
 
 void AMainPlayerCharacter::BeginPlay()
@@ -39,7 +41,19 @@ void AMainPlayerCharacter::BeginPlay()
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
-	AAutomaticWeapon* PlayerPrimaryWeapon = GetWorld()->SpawnActor<AAutomaticWeapon>(BP_Weapon_AssaultRifle);
+
+	FActorSpawnParameters Params;
+
+	Params.SpawnCollisionHandlingOverride = 
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	AAutomaticWeapon* PlayerPrimaryWeapon = GetWorld()->SpawnActor<
+		AAutomaticWeapon>(BP_Weapon_AssaultRifle, FTransform(), Params);
+
+	PlayerPrimaryWeapon->AttachToComponent(Cast<USceneComponent>(GetMesh()),
+		FAttachmentTransformRules::SnapToTargetIncludingScale,
+		FName("Socket_Weapon"));
+
 }
 
 void AMainPlayerCharacter::Tick(float DeltaTime)
