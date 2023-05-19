@@ -55,15 +55,21 @@ public:
 	// Ensures that player will not jump at inappropriate times.
 	void JumpNotAllowed();
 
+	// Handles the fire action of the player character.
+	void Fire();
+
+	class AWeaponBase* PlayerPrimaryWeapon;
+
 public:
 	// Flag for checking Jumping States.
 	UPROPERTY(BlueprintReadOnly, Category = "Jump")
 		bool bIsJumping;
 	
-	//
+	// Create a reference for player weapons.
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-		TSubclassOf<class AAutomaticWeapon> BP_Weapon_AssaultRifle;
+		TSubclassOf<class AWeaponBase> BP_Weapon_AssaultRifle;
 
+	
 
 protected:
 	/** Called when the game starts or when spawned */

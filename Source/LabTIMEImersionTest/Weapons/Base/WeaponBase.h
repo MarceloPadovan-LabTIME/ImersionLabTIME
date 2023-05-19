@@ -56,8 +56,29 @@ protected:
 		meta=(Tooltip="The weapon's name", AllowPrivateAccess=True))
 	FString WeaponName = FString();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Arma")
+	/** The weapon`s mesh*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Arma",
+		meta = (AllowPrivateAcess = "true"))
 	class USkeletalMeshComponent* MalhaDaArma;
+
+	/* The weapon`s ArrowComponent(for fire origin and direction */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Arma",
+		meta = (AllowPrivateAcess = "true"))
+	class UArrowComponent* WeaponArrow;
+
+	/* The weapon`s Effects(EFX) - Muzzle Flash */
+	UPROPERTY(EditAnywhere, Category = "ShotEFX")
+	class UParticleSystem* MuzzleEFX;
+
+	/* The weapon`s Hit Effect, blood for organic, splash for other */
+	UPROPERTY(EditAnywhere, Category = "HitEFX")
+	class UParticleSystem* HitBloodEFX;
+	UPROPERTY(EditAnywhere, Category = "HitEFX")
+	class UParticleSystem* HitHardSurfaceEFX;
+
+	/* The weapon`s Visual Hit Effect, decals for affected surface */
+	UPROPERTY(EditAnywhere, Category = 'HitEFX')
+	class UMaterialInterface* HitDecalVFX;
 
 protected:
 	/** The amount of ammunition the weapon still has on it's chamber */

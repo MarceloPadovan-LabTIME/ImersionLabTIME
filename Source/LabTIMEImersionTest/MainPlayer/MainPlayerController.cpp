@@ -18,9 +18,9 @@ void AMainPlayerController::SetupInputComponent()
 		this, &AMainPlayerController::RequestCloseScoreBoard);
 
 	// Bind the player "Atirar" input to fire raycasts
-	check(InputComponent);
-	InputComponent->BindAction("Atirar", EInputEvent::IE_Released, this, 
-		&AMainPlayerController::AtirarRayCast);
+	//check(InputComponent);
+	//InputComponent->BindAction("Atirar", EInputEvent::IE_Released, this, 
+		//&AMainPlayerController::AtirarRayCast);
 }
 
 void AMainPlayerController::AtirarRayCast()

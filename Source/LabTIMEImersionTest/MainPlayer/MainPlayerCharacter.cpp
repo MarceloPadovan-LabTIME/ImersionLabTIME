@@ -12,6 +12,9 @@
 #include "Engine/World.h"
 #include "LabTIMEImersionTest/Weapons/Base/AutomaticWeapon.h"
 #include "Engine/EngineTypes.h"
+#include "Components/ArrowComponent.h"
+#include "Components/SceneComponent.h"
+#include "WorldCollision.h"
 
 AMainPlayerCharacter::AMainPlayerCharacter()
 {
@@ -47,8 +50,8 @@ void AMainPlayerCharacter::BeginPlay()
 	Params.SpawnCollisionHandlingOverride = 
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	AAutomaticWeapon* PlayerPrimaryWeapon = GetWorld()->SpawnActor<
-		AAutomaticWeapon>(BP_Weapon_AssaultRifle, FTransform(), Params);
+	PlayerPrimaryWeapon = GetWorld()->SpawnActor<
+		AWeaponBase>(BP_Weapon_AssaultRifle, FTransform(), Params);
 
 	PlayerPrimaryWeapon->AttachToComponent(Cast<USceneComponent>(GetMesh()),
 		FAttachmentTransformRules::SnapToTargetIncludingScale,
@@ -90,7 +93,9 @@ void AMainPlayerCharacter::SetupPlayerInputComponent
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, 
 		&AMainPlayerCharacter::JumpNotAllowed);
 	
-
+	// Bind the Fire with a weapon action
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::Fire);
 }
 
 void AMainPlayerCharacter::MoveCharacterForward(float AxisValue)
@@ -123,5 +128,10 @@ void AMainPlayerCharacter::MyJump()
 void AMainPlayerCharacter::JumpNotAllowed()
 {
 	bIsJumping = false;
+}
+
+void AMainPlayerCharacter::Fire()
+{
+	PlayerPrimaryWeapon->FireWeapon();
 }
 
