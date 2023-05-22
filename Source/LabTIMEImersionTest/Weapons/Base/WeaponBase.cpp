@@ -15,6 +15,7 @@
 #include "Animation/SkeletalMeshActor.h"
 #include "Materials/MaterialInterface.h"
 #include "Math/UnrealMathUtility.h"
+#include "Sound/SoundBase.h"
 
 AWeaponBase::AWeaponBase()
 {
@@ -25,11 +26,12 @@ AWeaponBase::AWeaponBase()
 	// IDK if is a good practice declarations in the Constructor Scope...
 	// Feel free to change. xD
 
-	// This declaration prevents Unreal from crashing.
+	// These declarations prevents Unreal from crashing.
 	MuzzleEFX = nullptr;
 	HitBloodEFX = nullptr;
 	HitHardSurfaceEFX = nullptr;
 	HitDecalVFX = nullptr;
+	ShotSFX = nullptr;
 
 	MalhaDaArma = CreateDefaultSubobject<USkeletalMeshComponent>(
 		FName("MalhaDaArma"));
@@ -97,6 +99,13 @@ void AWeaponBase::FireWeapon()
 			FirePoint, EndRaycastTrack, ECollisionChannel::ECC_Visibility, 
 			Params);
 		
+		// Make this weapon loud - Uses sound system to spawn Shot Sound.
+		if (ShotSFX)
+		{
+			UGameplayStatics::PlaySoundAtLocation(WeaponArrow,
+				ShotSFX, FirePoint);
+		}
+
 		// Check if the ray hit something.
 		if (HitSomething)
 		{
@@ -135,9 +144,11 @@ void AWeaponBase::FireWeapon()
 			}
 		}
 
+		/*
 		// Draw a visible ray, to see its working.
-		//DrawDebugLine(GetWorld(), FirePoint, EndRaycastTrack, FColor::Red,
-			//false, 5.0f, (uint8)0, 1.0f);
+		DrawDebugLine(GetWorld(), FirePoint, EndRaycastTrack, FColor::Red,
+			false, 5.0f, (uint8)0, 1.0f);
+		*/
 
 		// MuzzleEFX can be set by way of Blueprints.
 		if (MuzzleEFX)

@@ -70,6 +70,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "ShotEFX")
 	class UParticleSystem* MuzzleEFX;
 
+	/* The weapon`s shot sound effect (SFX) */
+	UPROPERTY(EditAnywhere, Category = "ShotEFX")
+		class USoundBase* ShotSFX;
+
 	/* The weapon`s Hit Effect, blood for organic, splash for other */
 	UPROPERTY(EditAnywhere, Category = "HitEFX")
 	class UParticleSystem* HitBloodEFX;
@@ -77,7 +81,7 @@ protected:
 	class UParticleSystem* HitHardSurfaceEFX;
 
 	/* The weapon`s Visual Hit Effect, decals for affected surface */
-	UPROPERTY(EditAnywhere, Category = 'HitEFX')
+	UPROPERTY(EditAnywhere, Category = "HitEFX")
 	class UMaterialInterface* HitDecalVFX;
 
 protected:
