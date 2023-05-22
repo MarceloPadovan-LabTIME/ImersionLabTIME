@@ -38,6 +38,28 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	GetCharacterMovement()->CrouchedHalfHeight = 70.f;
 }
 
+void AMainPlayerCharacter::SetHealth(float Damage)
+{
+	/* Check if the Player still have Health */
+	if (Health > 0.0f)
+	{
+		Health -= Damage;
+	}
+
+	/* Check if the Player took enough damage to be dead */
+	else if (Health <= 0.0f)
+	{
+		/* A flag that indicates the player is dead */
+		bIsDead = true;
+	}
+	
+}
+
+float AMainPlayerCharacter::GetHealth()
+{
+	return Health;
+}
+
 void AMainPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();

@@ -14,4 +14,28 @@ class LABTIMEIMERSIONTEST_API AEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
 	
+protected:
+	AEnemyAIController();
+
+	// Gives the control of the Enemy Pawn(Enemy Character)
+	// to the AIController(this class).
+	virtual void OnPossess(APawn* InPawn) override;
+
+	/* Create sensory functionalities(vision, audition) of an actor */
+	UPROPERTY(EditDefaultsOnly)
+	class UPawnSensingComponent* PawnSensingComp;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UBehaviorTree* BehaviorTree;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UBehaviorTreeComponent* BehaviorTreeComp;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UBlackboardComponent* BlackBoardComp;
+
+	/* Delegate function, will be called when the enemyAI see the player */
+	UFUNCTION()
+	void OnSeePawn(class APawn* SensedPawn);
+
 };

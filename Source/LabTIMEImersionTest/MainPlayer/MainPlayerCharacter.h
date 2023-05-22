@@ -69,6 +69,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 		TSubclassOf<class AWeaponBase> BP_Weapon_AssaultRifle;
 
+	UFUNCTION()
+	void SetHealth(float Damage);
+
+	UFUNCTION()
+	float GetHealth();
+
 	
 
 protected:
@@ -80,5 +86,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, 
 		Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent = nullptr;
+
+	/* Main atribute of the player character, health */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributos")
+	float Health;
+
+	/* Flag: indicates the player is Dead or not */
+	UPROPERTY(BlueprintReadOnly, Category = "Atibutos")
+	bool bIsDead;
 
 };

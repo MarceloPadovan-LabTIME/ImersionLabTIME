@@ -16,6 +16,9 @@
 #include "Materials/MaterialInterface.h"
 #include "Math/UnrealMathUtility.h"
 #include "Sound/SoundBase.h"
+#include "GameFramework/Character.h"
+#include "LabTIMEImersionTest/Enemies/Base/EnemyCharacterBase.h"
+#include "LabTIMEImersionTest/MainPlayer/MainPlayerCharacter.h"
 
 AWeaponBase::AWeaponBase()
 {
@@ -114,16 +117,42 @@ void AWeaponBase::FireWeapon()
 			// Which Actor did raycast hit? This return the answer.
 			AActor* HitActor = HitResultInfo.GetActor();
 
-			// Check If the raycast hit an Actor with a SkeletalMesh type,
+			// Check If the raycast hit an Actor of class type ACharacter,
 			// or subclass or suboject.
 			if (HitActor->GetClass()->IsChildOf(
-				ASkeletalMeshActor::StaticClass()) && HitBloodEFX)
+				ACharacter::StaticClass()) && HitBloodEFX)
 			{
+				/* Hit and Spawn HitBlood Effect at the Hit location */
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),
 					HitBloodEFX, HitResultInfo.Location, 
 					HitResultInfo.ImpactNormal.Rotation(), true);
+
+				/* Make a cast to test if the raycast hit a PlayerCharacter.
+				* If the hitResult return a PlayerCharacter(Player),
+				* hit and cause some Damage
+				*/
+				AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(HitActor);
+				if (Player != nullptr)
+				{
+					/* Player take some Damage */
+					Player->SetHealth(0.25f);
+				}
+				
+				else
+				{
+					/* Try another cast to check if the raycast hit an Enemy,
+					* If the Hitresult return a EnemyCharacter(Enemy),
+					* hit and cause some Damage
+					*/
+					AEnemyCharacterBase* Enemy = Cast<AEnemyCharacterBase>(HitActor);
+					if (Enemy != nullptr)
+					{
+						/* Damage the Enemy Health */
+						Enemy->SetHealth(5.0f);
+					}
+				}
 			}
-			// If not a SkeletalMesh type, then uses 
+			// If not a ACharacter type, then uses 
 			// HitHardSurfaceEFX/HitDecalVFX.
 			else if (HitHardSurfaceEFX)
 			{
