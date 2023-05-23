@@ -17,6 +17,7 @@ void AEnemyCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Gives a Weapon to the Enemy. Otherwise is not a fair play.
 	FActorSpawnParameters Params;
 
 	Params.SpawnCollisionHandlingOverride =
@@ -38,21 +39,30 @@ void AEnemyCharacterBase::Tick(float DeltaTime)
 
 void AEnemyCharacterBase::SetHealth(float Damage)
 {
-	/* Check if the Enemy still have Health */
+	// Check if the Enemy still have Health.
 	if (Health > 0.0f)
 	{
 		Health -= Damage;
 	}
 
-	/* Check if the Enemy took enough damage to be dead */
+	// Check if the Enemy took enough damage to be dead.
 	else if (Health <= 0.0f)
 	{
-		/* A flag that indicates the enemy is dead */
+		// A flag that indicates the enemy is dead.
 		bIsDead = true;
+		// A delay to destroy the enemy actor, removing it from the level
+		SetLifeSpan(5.0f);
+		// removing the enemy weapon from the level too.
+		EnemyWeapon->Destroy();
 	}
 }
 
 float AEnemyCharacterBase::GetHealth()
 {
 	return Health;
+}
+
+bool AEnemyCharacterBase::bIsThisCharacterDead()
+{
+	return bIsDead;
 }

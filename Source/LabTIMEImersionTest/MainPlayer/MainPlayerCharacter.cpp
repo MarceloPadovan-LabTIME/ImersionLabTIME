@@ -60,6 +60,11 @@ float AMainPlayerCharacter::GetHealth()
 	return Health;
 }
 
+bool AMainPlayerCharacter::bIsThisCharacterDead()
+{
+	return bIsDead;
+}
+
 void AMainPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();

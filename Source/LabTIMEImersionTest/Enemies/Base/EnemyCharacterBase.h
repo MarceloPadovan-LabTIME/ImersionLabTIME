@@ -28,10 +28,14 @@ public:
 public: 
 
 	UFUNCTION()
-		void SetHealth(float Damage);
+	void SetHealth(float Damage);
 
 	UFUNCTION()
-		float GetHealth();
+	float GetHealth();
+
+	/* This Function return the actual state about death/alive */
+	UFUNCTION()
+	bool bIsThisCharacterDead();
 
 protected:
 	/** Called when the game starts or when spawned */

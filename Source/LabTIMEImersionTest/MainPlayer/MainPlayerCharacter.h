@@ -75,6 +75,9 @@ public:
 	UFUNCTION()
 	float GetHealth();
 
+	UFUNCTION()
+	bool bIsThisCharacterDead();
+
 	
 
 protected:

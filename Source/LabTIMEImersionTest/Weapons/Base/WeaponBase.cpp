@@ -73,124 +73,126 @@ void AWeaponBase::Tick(float DeltaTime)
 void AWeaponBase::FireWeapon()
 {
 	WeaponArrow = FindComponentByClass<UArrowComponent>();
-
-	if (WeaponArrow != nullptr)
+	if (!WeaponArrow)
 	{
-		// Set weapon ArrowComponent as FirePoint Origin.
-		FVector FirePoint = WeaponArrow->GetComponentLocation();
+		UE_LOG(LogTemp, Error, 
+			TEXT("Could not FireWeapon, WeaponArrow not found."));
+		return;
+	}
 
-		// Set Fire Direction, uses ArrowComponent as Reference.
-		FVector Dir = WeaponArrow->GetComponentRotation().Vector();
+	// Set weapon ArrowComponent as FirePoint Origin.
+	FVector FirePoint = WeaponArrow->GetComponentLocation();
 
-		// Handles the raycast lenght and range.
-		FVector EndRaycastTrack = FirePoint + (Dir * 8000.f);
+	// Set Fire Direction, uses ArrowComponent as Reference.
+	FVector Dir = WeaponArrow->GetComponentRotation().Vector();
 
-		FHitResult HitResultInfo;
+	// Handles the raycast lenght and range.
+	FVector EndRaycastTrack = FirePoint + (Dir * 8000.f);
 
-		FCollisionQueryParams Params;
+	FHitResult HitResultInfo;
 
-		// Ensures that the raycast will not collide with the weapon`s Actor.
-		// and his components.
-		Params.AddIgnoredActor(this);
-		Params.AddIgnoredActor(GetOwner());
-		Params.bTraceComplex = true;
+	FCollisionQueryParams Params;
 
-		// Invoke Raycast by Unreal Default. ??? IDK what I`m saying,
-		// this is the way
-		// How to unreal use the raycast system.
-		bool HitSomething = GetWorld()->LineTraceSingleByChannel(HitResultInfo,
-			FirePoint, EndRaycastTrack, ECollisionChannel::ECC_Visibility, 
-			Params);
-		
-		// Make this weapon loud - Uses sound system to spawn Shot Sound.
-		if (ShotSFX)
+	// Ensures that the raycast will not collide with the weapon`s Actor.
+	// and his components.
+	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(GetOwner());
+	Params.bTraceComplex = true;
+
+	// Invoke Raycast by Unreal Default. ??? IDK what I`m saying,
+	// this is the way
+	// How to unreal use the raycast system.
+	bool HitSomething = GetWorld()->LineTraceSingleByChannel(HitResultInfo,
+		FirePoint, EndRaycastTrack, ECollisionChannel::ECC_Visibility,
+		Params);
+
+	// Make this weapon loud - Uses sound system to spawn Shot Sound.
+	if (ShotSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(WeaponArrow,
+			ShotSFX, FirePoint);
+	}
+
+	if (!HitSomething)
+	{
+		//.....
+	}
+
+	// Check if the ray hit something.
+	UE_LOG(LogTemp, Warning, TEXT("PEW! Hit Something!"));
+
+	// Which Actor did raycast hit? This return the answer.
+	AActor* HitActor = HitResultInfo.GetActor();
+
+	// Check If the raycast hit an Actor of class type ACharacter,
+	// or subclass or suboject.
+	if (HitActor->GetClass()->IsChildOf(
+		ACharacter::StaticClass()) && HitBloodEFX)
+	{
+		// Hit and Spawn HitBlood Effect at the Hit location.
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),
+			HitBloodEFX, HitResultInfo.Location,
+			HitResultInfo.ImpactNormal.Rotation(), true);
+
+		// Make a cast to test if the raycast hit a PlayerCharacter.
+		// If the hitResult return a PlayerCharacter(Player),
+		// hit and cause some Damage
+		AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(HitActor);
+		if (Player != nullptr)
 		{
-			UGameplayStatics::PlaySoundAtLocation(WeaponArrow,
-				ShotSFX, FirePoint);
+			// Player take some Damage.
+			Player->SetHealth(0.25f);
 		}
 
-		// Check if the ray hit something.
-		if (HitSomething)
+		// Try another cast to check if the raycast hit an Enemy,
+		// If the Hitresult return a EnemyCharacter(Enemy),
+		// hit and cause some Damage.
+		AEnemyCharacterBase* Enemy = Cast<AEnemyCharacterBase>(HitActor);
+		if (Enemy != nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("PEW! Hit Something!"));
-
-			// Which Actor did raycast hit? This return the answer.
-			AActor* HitActor = HitResultInfo.GetActor();
-
-			// Check If the raycast hit an Actor of class type ACharacter,
-			// or subclass or suboject.
-			if (HitActor->GetClass()->IsChildOf(
-				ACharacter::StaticClass()) && HitBloodEFX)
-			{
-				/* Hit and Spawn HitBlood Effect at the Hit location */
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),
-					HitBloodEFX, HitResultInfo.Location, 
-					HitResultInfo.ImpactNormal.Rotation(), true);
-
-				/* Make a cast to test if the raycast hit a PlayerCharacter.
-				* If the hitResult return a PlayerCharacter(Player),
-				* hit and cause some Damage
-				*/
-				AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(HitActor);
-				if (Player != nullptr)
-				{
-					/* Player take some Damage */
-					Player->SetHealth(0.25f);
-				}
-				
-				else
-				{
-					/* Try another cast to check if the raycast hit an Enemy,
-					* If the Hitresult return a EnemyCharacter(Enemy),
-					* hit and cause some Damage
-					*/
-					AEnemyCharacterBase* Enemy = Cast<AEnemyCharacterBase>(HitActor);
-					if (Enemy != nullptr)
-					{
-						/* Damage the Enemy Health */
-						Enemy->SetHealth(5.0f);
-					}
-				}
-			}
-			// If not a ACharacter type, then uses 
-			// HitHardSurfaceEFX/HitDecalVFX.
-			else if (HitHardSurfaceEFX)
-			{
-				// Spawn Hit EFX.
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),
-					HitHardSurfaceEFX, HitResultInfo.Location,
-					HitResultInfo.ImpactNormal.Rotation(), true);
-				
-				// For cool EFX. Radomize the size of decals.
-				FVector RandomSize = FVector(FMath::RandRange(10.f, 50.f));
-
-				// Spawn Hit Decal VFX.
-				UGameplayStatics::SpawnDecalAttached(HitDecalVFX, RandomSize,
-					HitResultInfo.GetComponent(), NAME_None,
-					HitResultInfo.Location,
-					HitResultInfo.ImpactNormal.Rotation(),
-					EAttachLocation::KeepWorldPosition, 60.f);
-			}
-		}
-
-		/*
-		// Draw a visible ray, to see its working.
-		DrawDebugLine(GetWorld(), FirePoint, EndRaycastTrack, FColor::Red,
-			false, 5.0f, (uint8)0, 1.0f);
-		*/
-
-		// MuzzleEFX can be set by way of Blueprints.
-		if (MuzzleEFX)
-		{
-			// Uses ArrowComponent as reference to spawn Muzzle Efx.
-			FVector Loc = WeaponArrow->GetComponentLocation();
-			FRotator Rot = WeaponArrow->GetComponentRotation();
-			FVector Scale = FVector(0.5f);
-			// Spawn the MuzzleEFX.
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleEFX,
-				Loc, Rot, Scale, true);
+			// Damage the Enemy Health.
+			Enemy->SetHealth(5.0f);
 		}
 	}
-	
+	// If not a ACharacter type, then uses 
+	// HitHardSurfaceEFX/HitDecalVFX.
+	else if (HitHardSurfaceEFX)
+	{
+		// Spawn Hit EFX.
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),
+			HitHardSurfaceEFX, HitResultInfo.Location,
+			HitResultInfo.ImpactNormal.Rotation(), true);
+
+		// For cool EFX. Radomize the size of decals.
+		FVector RandomSize = FVector(FMath::RandRange(10.f, 50.f));
+
+		// Spawn Hit Decal VFX.
+		UGameplayStatics::SpawnDecalAttached(HitDecalVFX, RandomSize,
+			HitResultInfo.GetComponent(), NAME_None,
+			HitResultInfo.Location,
+			HitResultInfo.ImpactNormal.Rotation(),
+			EAttachLocation::KeepWorldPosition, 60.f);
+	}
+
+	SpawnMuzzleEFX();
+
+}
+
+void AWeaponBase::SpawnMuzzleEFX()
+{
+	// MuzzleEFX can be set by way of Blueprints.
+	if (!MuzzleEFX)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Can`t Spawn the Muzzle Effect."));
+		return;
+	}
+
+	// Uses ArrowComponent as reference to spawn Muzzle Efx.
+	FVector Loc = WeaponArrow->GetComponentLocation();
+	FRotator Rot = WeaponArrow->GetComponentRotation();
+	FVector Scale = FVector(0.5f);
+	// Spawn the MuzzleEFX.
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleEFX,
+		Loc, Rot, Scale, true);
 }
 

@@ -43,6 +43,12 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
+	/** Spawn a Muzzle Effect when a shot is taken */
+	void SpawnMuzzleEFX();
+
+	/** */
+
+protected:
 	/** 
 	* The weapon ammunition amount. 
 	* The bullet rounds amount it can fire in a row 
@@ -61,26 +67,26 @@ protected:
 		meta = (AllowPrivateAcess = "true"))
 	class USkeletalMeshComponent* MalhaDaArma;
 
-	/* The weapon`s ArrowComponent(for fire origin and direction */
+	/** The weapon`s ArrowComponent(for fire origin and direction */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Arma",
 		meta = (AllowPrivateAcess = "true"))
 	class UArrowComponent* WeaponArrow;
 
-	/* The weapon`s Effects(EFX) - Muzzle Flash */
+	/** The weapon`s Effects(EFX) - Muzzle Flash */
 	UPROPERTY(EditAnywhere, Category = "ShotEFX")
 	class UParticleSystem* MuzzleEFX;
 
-	/* The weapon`s shot sound effect (SFX) */
+	/** The weapon`s shot sound effect (SFX) */
 	UPROPERTY(EditAnywhere, Category = "ShotEFX")
 		class USoundBase* ShotSFX;
 
-	/* The weapon`s Hit Effect, blood for organic, splash for other */
+	/** The weapon`s Hit Effect, blood for organic, splash for other */
 	UPROPERTY(EditAnywhere, Category = "HitEFX")
 	class UParticleSystem* HitBloodEFX;
 	UPROPERTY(EditAnywhere, Category = "HitEFX")
 	class UParticleSystem* HitHardSurfaceEFX;
 
-	/* The weapon`s Visual Hit Effect, decals for affected surface */
+	/** The weapon`s Visual Hit Effect, decals for affected surface */
 	UPROPERTY(EditAnywhere, Category = "HitEFX")
 	class UMaterialInterface* HitDecalVFX;
 
