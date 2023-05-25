@@ -65,7 +65,7 @@ void AEnemyAIController::OnSeePawn(APawn* SensedPawn)
 	// the SensedPawn as PlayerCharacter.
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(SensedPawn);
 
-	 
+	                                                                           
 	// Check if the Enemy is Dead. 
 	// OR Check if the Player is Dead.
 	// Like this, the Enemy only will shot and persuit(not yet) if he is alive.

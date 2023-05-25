@@ -46,7 +46,21 @@ protected:
 	/** Spawn a Muzzle Effect when a shot is taken */
 	void SpawnMuzzleEFX();
 
-	/** */
+	/** Every time a shot is made, this function will play the shot sound */
+	void PlayGunshotSoundEFX(FVector PlaySoundLocation);
+
+	/** 
+	* When the shot hit a organic body, this function will spawn a
+	* BloodySplashHitEffect and identifies what kind of target hit, 
+	* then inflict some damage to the target.
+	*/
+	void HitOrganicTargets(FHitResult HitResultInfo, AActor* HitActor);
+
+	/** 
+	* When the shot hit a hard surface instead of organic body,
+	* this function will spawn a Hit Effect and a Decal with random size 
+	*/
+	void HitAHardSurface(FHitResult HitResultInfo);
 
 protected:
 	/** 
@@ -67,7 +81,7 @@ protected:
 		meta = (AllowPrivateAcess = "true"))
 	class USkeletalMeshComponent* MalhaDaArma;
 
-	/** The weapon`s ArrowComponent(for fire origin and direction */
+	/** The weapon`s ArrowComponent(for fire origin and direction) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Arma",
 		meta = (AllowPrivateAcess = "true"))
 	class UArrowComponent* WeaponArrow;
@@ -89,6 +103,21 @@ protected:
 	/** The weapon`s Visual Hit Effect, decals for affected surface */
 	UPROPERTY(EditAnywhere, Category = "HitEFX")
 	class UMaterialInterface* HitDecalVFX;
+
+	/** Weapon Atributes */
+	/** Manipulate the amount of damage the weapon can induce on Player */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Atributes")
+	float DamageOnPlayer = 0.25f;
+	/** Manipulate the amount of damage the weapon can induce on Enemies */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Atributes")
+	float DamageOnEnemy = 20.0f;
+
+	/** Handle the weapon`s max range(and raycast range) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
+	float WeaponMaxRange = 8000.0f;
+
+
+
 
 protected:
 	/** The amount of ammunition the weapon still has on it's chamber */
