@@ -18,14 +18,18 @@ void AEnemyCharacterBase::BeginPlay()
 	Super::BeginPlay();
 
 	// Gives a Weapon to the Enemy. Otherwise is not a fair play.
+	
+	// Create a parameter which will ensure that where will be no
+	// collision conflicts
 	FActorSpawnParameters Params;
-
 	Params.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
+	// Spawn this character's(Enemy) weapon.
 	EnemyWeapon = GetWorld()->SpawnActor<
 		AWeaponBase>(BP_Weapon_AssaultRifle, FTransform(), Params);
 
+	// Attach the weapon to the character hand socket, previously created.
 	EnemyWeapon->AttachToComponent(Cast<USceneComponent>(GetMesh()),
 		FAttachmentTransformRules::SnapToTargetIncludingScale,
 		FName("Socket_Weapon"));

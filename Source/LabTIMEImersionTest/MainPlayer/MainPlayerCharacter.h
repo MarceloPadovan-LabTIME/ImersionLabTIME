@@ -73,7 +73,8 @@ public:
 	/** Handles the fire action of the player character */
 	void Fire();
 
-	/** A Reference of Weapon class, to spawn a BP copy in the character's hand
+	/** 
+	* A Reference of Weapon class, to spawn a BP copy in the character's hand
 	* and use all its features, like shot action, realod action(WYP).
 	*/
 	class AWeaponBase* PlayerPrimaryWeapon;

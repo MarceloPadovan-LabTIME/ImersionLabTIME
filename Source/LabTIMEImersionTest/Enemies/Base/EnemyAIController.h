@@ -25,12 +25,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	class UPawnSensingComponent* PawnSensingComp;
 
+	/** A Reference of the Enemy A.I. Behavior Tree */
 	UPROPERTY(EditDefaultsOnly)
 	class UBehaviorTree* BehaviorTree;
 
+	/** Create a Behavior Tree Component, to use its features */
 	UPROPERTY(EditDefaultsOnly)
 	class UBehaviorTreeComponent* BehaviorTreeComp;
 
+	/** Create a Blackboard Component, to use its features */
 	UPROPERTY(EditDefaultsOnly)
 	class UBlackboardComponent* BlackBoardComp;
 

@@ -23,13 +23,18 @@ public:
 	/** Called every frame */
 	virtual void Tick(float DeltaTime) override;
 
+	/**
+	* A Reference of Weapon class, to spawn a BP copy in the character's hand
+	* and use all its features, like shot action, realod action(WYP).
+	*/
 	class AWeaponBase* EnemyWeapon;
 
 public: 
-
+	/** Handles the changes of character`s Health values */
 	UFUNCTION()
 	void SetHealth(float Damage);
 
+	/** Handles the return of current Health value */
 	UFUNCTION()
 	float GetHealth();
 
