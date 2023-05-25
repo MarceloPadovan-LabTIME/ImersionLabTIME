@@ -16,6 +16,19 @@ class LABTIMEIMERSIONTEST_API AMainPlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
+	/** Handles the changes of character`s Health values */
+	UFUNCTION()
+		void SetHealth(float Damage);
+
+	/** Handles the return of current Health value */
+	UFUNCTION()
+		float GetHealth();
+
+	/* Check the character`s current status regarding life and death */
+	UFUNCTION()
+		bool bIsThisCharacterDead();
+
+public:
 	/** Sets default values for this character's properties */
 	AMainPlayerCharacter();
 
@@ -48,37 +61,31 @@ public:
 	/** Handles the stand up action of the character */
 	void StandUp();
 
-	// Handles the jump action of the character.
+	/** Handles the jump action of the character. */
 	void MyJump();
 
-	// Handles the jump state not allow to jump of the character.
-	// Ensures that player will not jump at inappropriate times.
+	/** 
+	* Handles the jump state not allow to jump of the character.
+	* Ensures that player will not jump at inappropriate times.
+    */
 	void JumpNotAllowed();
 
-	// Handles the fire action of the player character.
+	/** Handles the fire action of the player character */
 	void Fire();
 
+	/** A Reference of Weapon class, to spawn a BP copy in the character's hand
+	* and use all its features, like shot action, realod action(WYP).
+	*/
 	class AWeaponBase* PlayerPrimaryWeapon;
 
 public:
-	// Flag for checking Jumping States.
+	/** Flag for checking Jumping States. */
 	UPROPERTY(BlueprintReadOnly, Category = "Jump")
 		bool bIsJumping;
 	
-	// Create a reference for player weapons.
+	/** Create a reference for player weapons. */
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 		TSubclassOf<class AWeaponBase> BP_Weapon_AssaultRifle;
-
-	UFUNCTION()
-	void SetHealth(float Damage);
-
-	UFUNCTION()
-	float GetHealth();
-
-	UFUNCTION()
-	bool bIsThisCharacterDead();
-
-	
 
 protected:
 	/** Called when the game starts or when spawned */
@@ -90,11 +97,11 @@ protected:
 		Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent = nullptr;
 
-	/* Main atribute of the player character, health */
+	/** Main atribute of the player character, health */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributos")
 	float Health;
 
-	/* Flag: indicates the player is Dead or not */
+	/** Flag: indicates the player is Dead or not */
 	UPROPERTY(BlueprintReadOnly, Category = "Atibutos")
 	bool bIsDead;
 

@@ -94,9 +94,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "ShotEFX")
 		class USoundBase* ShotSFX;
 
-	/** The weapon`s Hit Effect, blood for organic, splash for other */
+	/** The weapon`s Hit Effect, splash blood for organic targets */
 	UPROPERTY(EditAnywhere, Category = "HitEFX")
 	class UParticleSystem* HitBloodEFX;
+	/** The weapon`s Hit Effect, bullet shatter for hard surface targets */
 	UPROPERTY(EditAnywhere, Category = "HitEFX")
 	class UParticleSystem* HitHardSurfaceEFX;
 

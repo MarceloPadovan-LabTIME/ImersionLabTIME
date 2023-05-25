@@ -40,8 +40,9 @@ AWeaponBase::AWeaponBase()
 		FName("MalhaDaArma"));
 	RootComponent = MalhaDaArma;
 
-	// PS: Não posso quebrar a linha do endereço da referencia do Construtor.
-	// seria essa a exceção?
+	// TO DO:
+	// Find a way to create multiple variants of weapon`s type,
+	// and change your mesh.
 	ConstructorHelpers::FObjectFinder<USkeletalMesh>Malha(TEXT
 	("SkeletalMesh'/Game/Art/Meshes/Guns/SkeletalMeshes/SkeletalM_AK47.SkeletalM_AK47'"));
 

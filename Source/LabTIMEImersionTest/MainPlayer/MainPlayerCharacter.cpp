@@ -40,17 +40,28 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 void AMainPlayerCharacter::SetHealth(float Damage)
 {
-	/* Check if the Player still have Health */
+	// Check if the Player still have Health.
 	if (Health > 0.0f)
 	{
 		Health -= Damage;
 	}
 
-	/* Check if the Player took enough damage to be dead */
+	// Check if the Player took enough damage to be dead.
 	else if (Health <= 0.0f)
 	{
-		/* A flag that indicates the player is dead */
+		// A flag that indicates the player is dead.
 		bIsDead = true;
+
+		// Locate the player controller across the scene, and returns it. 
+		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+		// Ensures that the controller was found,
+		// preventing Unreal from crashing.
+		check(PlayerController);
+
+		// Uses the found PlayerController object to disable player inputs.
+		// thus preventing the character from moving when dying.
+		PlayerController->GetPawn()->DisableInput(PlayerController);
 	}
 	
 }
@@ -69,17 +80,20 @@ void AMainPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Ensures that the player character will be possess when the game starts.
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
-
+	// Create a parameter which will ensure that where will be no
+	// collision conflicts
 	FActorSpawnParameters Params;
-
 	Params.SpawnCollisionHandlingOverride = 
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
+	// Spawn this character's weapon.
 	PlayerPrimaryWeapon = GetWorld()->SpawnActor<
 		AWeaponBase>(BP_Weapon_AssaultRifle, FTransform(), Params);
 
+	// Attach the weapon to the character hand socket, previously created.
 	PlayerPrimaryWeapon->AttachToComponent(Cast<USceneComponent>(GetMesh()),
 		FAttachmentTransformRules::SnapToTargetIncludingScale,
 		FName("Socket_Weapon"));
