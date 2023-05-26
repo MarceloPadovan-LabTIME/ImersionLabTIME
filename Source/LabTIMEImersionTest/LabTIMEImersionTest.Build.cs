@@ -14,11 +14,14 @@ public class LabTIMEImersionTest : ModuleRules
 			"CoreUObject", 
 			"Engine", 
 			"InputCore",
+			"UMG",
 			"AIModule"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] 
 		{ 
+			"Slate",
+			"SlateCore",
 			"WidgetModule"
 		});
 

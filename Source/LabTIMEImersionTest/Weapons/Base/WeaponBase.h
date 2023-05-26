@@ -92,7 +92,7 @@ protected:
 
 	/** The weapon`s shot sound effect (SFX) */
 	UPROPERTY(EditAnywhere, Category = "ShotEFX")
-		class USoundBase* ShotSFX;
+	class USoundBase* ShotSFX;
 
 	/** The weapon`s Hit Effect, splash blood for organic targets */
 	UPROPERTY(EditAnywhere, Category = "HitEFX")
@@ -116,8 +116,6 @@ protected:
 	/** Handle the weapon`s max range(and raycast range) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
 	float WeaponMaxRange = 8000.0f;
-
-
 
 
 protected:

@@ -111,6 +111,7 @@ void AWeaponBase::FireWeapon()
 		// Debugging: Check if the ray hit something.
 		UE_LOG(LogTemp, Warning, 
 			TEXT("PEW! The shot was fired, but it didn`t hit anything."));
+		return;
 	}
 
 	// Debugging: Check if the ray hit something.
