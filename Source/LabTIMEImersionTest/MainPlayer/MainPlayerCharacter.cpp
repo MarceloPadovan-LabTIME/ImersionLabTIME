@@ -5,6 +5,7 @@
 #include "Components/InputComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Gameframework/SpringArmComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -23,12 +24,19 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	// Set size for collision capsule (yes, these values are hardcoded)
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
+	// Create the Spring Arm Camera, to use its functionalities, boom effects,
+	// smooth movements, and even more.
+	SpringArmCamera = CreateDefaultSubobject<USpringArmComponent>(
+		FName("SpringArm"));
+	SpringArmCamera->TargetArmLength = 200.f;
+	SpringArmCamera->bUsePawnControlRotation = true;
+	SpringArmCamera->AddRelativeLocation(FVector(0.f, 40.f, 50.f));
+	SpringArmCamera->SetupAttachment(RootComponent);
+
 	// Create the first person camera component	
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(
 		TEXT("FirstPersonCamera"));
-	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
-	FirstPersonCameraComponent->SetRelativeLocation(FVector(0, 0, 64.f));
-	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+	FirstPersonCameraComponent->SetupAttachment(GetMesh());
 	
 
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;

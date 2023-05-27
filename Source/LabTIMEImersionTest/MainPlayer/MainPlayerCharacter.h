@@ -18,15 +18,15 @@ class LABTIMEIMERSIONTEST_API AMainPlayerCharacter : public ACharacter
 public:
 	/** Handles the changes of character`s Health values */
 	UFUNCTION()
-		void SetHealth(float Damage);
+	void SetHealth(float Damage);
 
 	/** Handles the return of current Health value */
 	UFUNCTION()
-		float GetHealth();
+	float GetHealth();
 
 	/* Check the character`s current status regarding life and death */
 	UFUNCTION()
-		bool bIsThisCharacterDead();
+	bool bIsThisCharacterDead();
 
 public:
 	/** Sets default values for this character's properties */
@@ -82,11 +82,11 @@ public:
 public:
 	/** Flag for checking Jumping States. */
 	UPROPERTY(BlueprintReadOnly, Category = "Jump")
-		bool bIsJumping;
+	bool bIsJumping;
 	
 	/** Create a reference for player weapons. */
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-		TSubclassOf<class AWeaponBase> BP_Weapon_AssaultRifle;
+	TSubclassOf<class AWeaponBase> BP_Weapon_AssaultRifle;
 
 protected:
 	/** Called when the game starts or when spawned */
@@ -97,6 +97,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, 
 		Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent = nullptr;
+
+	/** First person spring arm camera, camera boom */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+		Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* SpringArmCamera = nullptr;
 
 	/** Main atribute of the player character, health */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributos")
