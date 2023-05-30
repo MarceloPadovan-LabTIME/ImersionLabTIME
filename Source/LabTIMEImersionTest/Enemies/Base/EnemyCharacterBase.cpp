@@ -6,6 +6,9 @@
 #include "LabTIMEImersionTest/Weapons/Base/WeaponBase.h"
 #include "Engine/EngineTypes.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "LabTIMEImersionTest/EnemySpawner.h"
+#include "Particles/ParticleSystem.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEnemyCharacterBase::AEnemyCharacterBase()
@@ -17,6 +20,8 @@ void AEnemyCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	PlaySpawnEFX();
+	
 	// Gives a Weapon to the Enemy. Otherwise is not a fair play.
 	
 	// Create a parameter which will ensure that where will be no
@@ -52,12 +57,8 @@ void AEnemyCharacterBase::SetHealth(float Damage)
 	// Check if the Enemy took enough damage to be dead.
 	else if (Health <= 0.0f)
 	{
-		// A flag that indicates the enemy is dead.
-		bIsDead = true;
-		// A delay to destroy the enemy actor, removing it from the level
-		SetLifeSpan(5.0f);
-		// removing the enemy weapon from the level too.
-		EnemyWeapon->Destroy();
+		Health = 0.0f;
+		Die();
 	}
 }
 
@@ -69,4 +70,47 @@ float AEnemyCharacterBase::GetHealth()
 bool AEnemyCharacterBase::bIsThisCharacterDead()
 {
 	return bIsDead;
+}
+
+void AEnemyCharacterBase::Die()
+{
+	// A flag that indicates the enemy is dead.
+	bIsDead = true;
+	// A delay to destroy the enemy actor, removing it from the level
+	//SetLifeSpan(5.0f);
+	// removing the enemy weapon from the level too.
+	// EnemyWeapon->Destroy();
+	
+	// Uses a TimerManager to Respawn the Enemy after 5 seconds.
+	GetWorldTimerManager().SetTimer(RespawnTimerHandle, this,
+		&AEnemyCharacterBase::Respawn, 5.f, false);
+	UE_LOG(LogTemp, Warning, TEXT("Enemy Died"));
+}
+
+void AEnemyCharacterBase::Respawn()
+{
+	UE_LOG(LogTemp, Warning, TEXT("New Enemy Spawned"));
+	// Give back the health value to this character.
+	bIsDead = false;
+	Health = 100.0f;
+	RespawnLocation = FVector(440, -350, 220);
+	SetActorLocation(RespawnLocation);
+	PlaySpawnEFX();
+
+	//AActor* OtherActor;
+	//AEnemySpawner* EnemySpawnerClass = Cast<AEnemySpawner>(OtherActor);
+	//EnemySpawnerClass->SpawnEnemy();
+}
+
+void AEnemyCharacterBase::PlaySpawnEFX()
+{
+	// Spawn Parameters
+	FVector SpawnLoc = GetActorLocation();
+	FRotator SpawnRot = GetActorRotation();
+	FVector Scale = FVector(1.0f);
+
+	// Spawn the Enemy with a Spawn EFX.
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnEFX,
+		SpawnLoc, SpawnRot, Scale, true);
+
 }

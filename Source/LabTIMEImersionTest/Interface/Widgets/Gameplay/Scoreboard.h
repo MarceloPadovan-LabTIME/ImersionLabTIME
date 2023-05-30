@@ -16,4 +16,8 @@ class LABTIMEIMERSIONTEST_API UScoreboard : public UUserWidgetBase
 {
 	GENERATED_BODY()
 
+
+public:
+
+	
 };

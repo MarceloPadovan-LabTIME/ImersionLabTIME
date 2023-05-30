@@ -42,19 +42,47 @@ public:
 	UFUNCTION()
 	bool bIsThisCharacterDead();
 
+	/**/
+	UFUNCTION()
+		void Die();
+
+	/**/
+	UFUNCTION()
+		void Respawn();
+
+	/**/
+	UFUNCTION()
+		void PlaySpawnEFX();
+
 protected:
 	/** Called when the game starts or when spawned */
 	virtual void BeginPlay() override;
 
+protected:
 	/* Let`s give a weapon to the enemy, like player */
 	UPROPERTY(EditAnyWhere, Category = "Weapon")
 	TSubclassOf<class AWeaponBase> BP_Weapon_AssaultRifle;
 
 	/* Enemy main atribute, the health */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributos")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
 	float Health;
-	/* A flag to check if the enemy still alive or not */
-	UPROPERTY(BlueprintReadOnly, Category = "Atibutos")
+	/** A flag to check if the enemy still alive or not,
+	and trigger death animation */
+	UPROPERTY(BlueprintReadOnly, Category = "Atibutes")
 	bool bIsDead;
 
+	/** Position to Respawn the Enemy*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
+	FVector RespawnLocation;
+
+	/** A Visual Effect Play when the Enemy is Spawned */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+	class UParticleSystem* SpawnEFX = nullptr;
+
+protected:
+	/** The timer handle for the Enemy respawn */
+	FTimerHandle RespawnTimerHandle;
+
+	/** The Timer Handle for the New Enemies Spawn */
+	FTimerHandle NewEnemySpawnTimerHandle;
 };

@@ -28,6 +28,21 @@ public:
 	UFUNCTION()
 	bool bIsThisCharacterDead();
 
+	/** 
+	* Called when the character dies, launch the bIsDead flag,
+	* play death animation, and take out all of the inputs received by player.
+	*/
+	UFUNCTION()
+	void Die();
+
+	/* 
+	* Handles the character's respawn. After dying, the character will be
+	* repawned at random location to continue acting until the game's mode end.
+	* Or call the GameOver state, and reload the scene.
+	*/
+	UFUNCTION()
+	void Respawn();
+
 public:
 	/** Sets default values for this character's properties */
 	AMainPlayerCharacter();
@@ -105,10 +120,14 @@ protected:
 
 	/** Main atribute of the player character, health */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributos")
-	float Health;
+	float Health = 100.0f;
 
 	/** Flag: indicates the player is Dead or not */
-	UPROPERTY(BlueprintReadOnly, Category = "Atibutos")
+	UPROPERTY(BlueprintReadOnly, Category = "Info")
 	bool bIsDead;
+
+	/**/
+	UPROPERTY(BlueprintReadOnly, Category = "Info")
+		FVector RespawnLocation;
 
 };

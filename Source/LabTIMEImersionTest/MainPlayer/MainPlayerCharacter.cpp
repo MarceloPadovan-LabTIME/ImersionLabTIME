@@ -17,6 +17,8 @@
 #include "Components/SceneComponent.h"
 #include "WorldCollision.h"
 
+
+
 AMainPlayerCharacter::AMainPlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -57,19 +59,8 @@ void AMainPlayerCharacter::SetHealth(float Damage)
 	// Check if the Player took enough damage to be dead.
 	else if (Health <= 0.0f)
 	{
-		// A flag that indicates the player is dead.
-		bIsDead = true;
-
-		// Locate the player controller across the scene, and returns it. 
-		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-
-		// Ensures that the controller was found,
-		// preventing Unreal from crashing.
-		check(PlayerController);
-
-		// Uses the found PlayerController object to disable player inputs.
-		// thus preventing the character from moving when dying.
-		PlayerController->GetPawn()->DisableInput(PlayerController);
+		//Health = 0.0f;
+		Die();
 	}
 	
 }
@@ -82,6 +73,30 @@ float AMainPlayerCharacter::GetHealth()
 bool AMainPlayerCharacter::bIsThisCharacterDead()
 {
 	return bIsDead;
+}
+
+void AMainPlayerCharacter::Die()
+{
+	// A flag that indicates the player is dead.
+	bIsDead = true;
+
+	// Locate the player controller across the scene, and returns it. 
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+	// Ensures that the controller was found,
+	// preventing Unreal from crashing.
+	check(PlayerController);
+
+	// Uses the found PlayerController object to disable player inputs.
+	// thus preventing the character from moving when dying.
+	PlayerController->GetPawn()->DisableInput(PlayerController);
+}
+
+void AMainPlayerCharacter::Respawn()
+{
+	//Set the actor location to the start location.
+	// Give the characater back to live.
+	// Give back the input controllers.
 }
 
 void AMainPlayerCharacter::BeginPlay()
@@ -126,9 +141,9 @@ void AMainPlayerCharacter::SetupPlayerInputComponent
 
 	// Bind the controller Yaw and Pitch movement 
 	PlayerInputComponent->BindAxis("Turn", this, 
-		&APawn::AddControllerYawInput);
+		&AMainPlayerCharacter::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, 
-		&APawn::AddControllerPitchInput);
+		&AMainPlayerCharacter::AddControllerPitchInput);
 
 	// Bind the crouch and uncrouch action
 	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Pressed, this,
