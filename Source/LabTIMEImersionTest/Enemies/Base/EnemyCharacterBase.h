@@ -42,21 +42,39 @@ public:
 	UFUNCTION()
 	bool bIsThisCharacterDead();
 
-	/**/
+	/** Handles the consequences of dying, animation, stop acting, and more */
 	UFUNCTION()
 		void Die();
 
-	/**/
+	/** Handles the Enemy Respawn, The same actor return to life */
 	UFUNCTION()
 		void Respawn();
 
-	/**/
+	/** Handles the Spawn VisualEffect When the Enemy is Spawned in the scene*/
 	UFUNCTION()
-		void PlaySpawnEFX();
+	void PlaySpawnEFX();
+
+	/** Add a Score value to the current player's score */
+	UFUNCTION()
+	void AddPlayerScore();
+
+public:
+
+	/** 
+	* A flag to check if the enemy still alive or not,
+	* and trigger death animation. 
+	*/
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	bool bIsDead;
 
 protected:
 	/** Called when the game starts or when spawned */
 	virtual void BeginPlay() override;
+
+protected:
+	/** Gives a Weapon to the Enemy. Otherwise is not a fair play. */
+	UFUNCTION()
+		void GetAWeapon();
 
 protected:
 	/* Let`s give a weapon to the enemy, like player */
@@ -64,12 +82,28 @@ protected:
 	TSubclassOf<class AWeaponBase> BP_Weapon_AssaultRifle;
 
 	/* Enemy main atribute, the health */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
 	float Health;
-	/** A flag to check if the enemy still alive or not,
-	and trigger death animation */
-	UPROPERTY(BlueprintReadOnly, Category = "Atibutes")
-	bool bIsDead;
+
+	/* 
+	* Enemy's attribute, the armor. This atribute handles the amout of damage
+	* the enemy characater can reduce before being inflicted on Health value
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
+	float Armor = 50.f;
+
+	/* 
+	* Armor's complementation, this value is a percentage that represents
+	* how much damage will be reduced.
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
+	float ArmorEffectiveness = 75.f;
+
+
+
+	/** The amount of scores point the player will receive after a kill */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes")
+	int32 EnemyRewardScore = 1;
 
 	/** Position to Respawn the Enemy*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
@@ -78,6 +112,9 @@ protected:
 	/** A Visual Effect Play when the Enemy is Spawned */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
 	class UParticleSystem* SpawnEFX = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Score")
+	class ALabTIMEImersionTestGameModeBase* MainGameMode = nullptr;
 
 protected:
 	/** The timer handle for the Enemy respawn */

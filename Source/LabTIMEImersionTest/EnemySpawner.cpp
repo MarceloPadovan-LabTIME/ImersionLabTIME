@@ -22,20 +22,11 @@ AEnemySpawner::AEnemySpawner()
 
 }
 
-void AEnemySpawner::SpawnEnemy()
-{
-	FVector SpawnLoc = GetActorLocation();
-	FRotator SpawnRot = GetActorRotation();
-
-	GetWorld()->SpawnActor<AEnemyCharacterBase>(BP_EnemyCharacter,
-		SpawnLoc, SpawnRot);
-}
-
 // Called when the game starts or when spawned
 void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SpawnLocation = GetActorLocation();
 	//SpawnEnemy();
 }
 
@@ -43,6 +34,14 @@ void AEnemySpawner::BeginPlay()
 void AEnemySpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
+void AEnemySpawner::SpawnEnemy()
+{
+	FVector SpawnLoc = GetActorLocation();
+	FRotator SpawnRot = GetActorRotation();
+
+	GetWorld()->SpawnActor<AEnemyCharacterBase>(BP_EnemyCharacter,
+		SpawnLoc, SpawnRot);
 }
 

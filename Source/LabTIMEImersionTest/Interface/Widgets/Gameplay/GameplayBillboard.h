@@ -14,5 +14,26 @@ UCLASS()
 class LABTIMEIMERSIONTEST_API UGameplayBillboard : public UUserWidgetBase
 {
 	GENERATED_BODY()
+
+
+public:
+
+	virtual void NativeConstruct() override;
+
+protected:
+
+	bool Initialize() override;
+
+private:
+
+	UFUNCTION()
+		FText SetScoreField();
+
+private:
+
+	UPROPERTY(meta = (BindWidget))
+		class UTextBlock* ScoreText;
+
+	
 	
 };

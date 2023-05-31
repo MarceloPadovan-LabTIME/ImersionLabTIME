@@ -188,8 +188,11 @@ void AWeaponBase::HitOrganicTargets(FHitResult HitResultInfo, AActor* HitActor)
 	AEnemyCharacterBase* Enemy = Cast<AEnemyCharacterBase>(HitActor);
 	if (Enemy != nullptr)
 	{
-		// Damage the Enemy Health.
-		Enemy->SetHealth(DamageOnEnemy);
+		if (Enemy->bIsDead == false)
+		{
+			// Damage the Enemy Health.
+			Enemy->SetHealth(DamageOnEnemy);
+		}
 	}
 }
 

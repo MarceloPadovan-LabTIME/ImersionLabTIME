@@ -35,7 +35,7 @@ protected:
 
 	/** Position to Spawn the Enemy*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
-	FVector RespawnLocation;
+	FVector SpawnLocation;
 
 	/** A reference of the Enemy type to spawn */
 	UPROPERTY(EditAnywhere, Category = "Spawn")
