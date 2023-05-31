@@ -34,8 +34,12 @@ protected:
 	class UBoxComponent* SpawnAreaVolume;
 
 	/** Position to Spawn the Enemy*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
 	FVector SpawnLocation;
+
+	/** The time in seconds to wait for new enemies to spawn  */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+	float SpawnEnemyTime = 5.0f;
 
 	/** A reference of the Enemy type to spawn */
 	UPROPERTY(EditAnywhere, Category = "Spawn")

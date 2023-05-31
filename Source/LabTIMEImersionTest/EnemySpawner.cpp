@@ -4,6 +4,7 @@
 #include "EnemySpawner.h"
 #include "Components/BoxComponent.h"
 #include "LabTIMEImersionTest/Enemies/Base/EnemyCharacterBase.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -19,15 +20,14 @@ AEnemySpawner::AEnemySpawner()
 		TEXT("SpawnAreaVolume"));
 	SpawnAreaVolume->AttachToComponent(RootComponent,
 		FAttachmentTransformRules::KeepRelativeTransform);
-
 }
 
 // Called when the game starts or when spawned
 void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnLocation = GetActorLocation();
-	//SpawnEnemy();
+
+	GetWorld()->GetTimerManager().SetTimer(NewEnemySpawnTimerHandle, this, &AEnemySpawner::SpawnEnemy, SpawnEnemyTime, true, SpawnEnemyTime);
 }
 
 // Called every frame
@@ -38,10 +38,12 @@ void AEnemySpawner::Tick(float DeltaTime)
 
 void AEnemySpawner::SpawnEnemy()
 {
-	FVector SpawnLoc = GetActorLocation();
+	SpawnLocation = UKismetMathLibrary::RandomPointInBoundingBox(
+		GetActorLocation(), SpawnAreaVolume->GetScaledBoxExtent());
+
 	FRotator SpawnRot = GetActorRotation();
 
 	GetWorld()->SpawnActor<AEnemyCharacterBase>(BP_EnemyCharacter,
-		SpawnLoc, SpawnRot);
+		SpawnLocation, SpawnRot);
 }
 
