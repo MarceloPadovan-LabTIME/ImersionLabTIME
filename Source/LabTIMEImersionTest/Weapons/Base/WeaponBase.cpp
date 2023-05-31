@@ -26,9 +26,6 @@ AWeaponBase::AWeaponBase()
 
 	PrimaryActorTick.bCanEverTick = true;
 
-	// IDK if is a good practice declarations in the Constructor Scope...
-	// Feel free to change. xD
-
 	// These declarations prevents Unreal from crashing.
 	MuzzleEFX = nullptr;
 	HitBloodEFX = nullptr;
@@ -64,6 +61,12 @@ void AWeaponBase::BeginPlay()
 
 	// Set the current ammunition amount as we start the game with full ammo
 	WeaponCurrentAmmunitionAmount = WeaponAmmunitionAmount;
+
+	PlayerCharacter = Cast<AMainPlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if (!PlayerCharacter)
+	{
+		UE_LOG(LogTemp, Error, TEXT("PlayerCharacter not found"));
+	}
 }
 
 void AWeaponBase::Tick(float DeltaTime)
@@ -73,10 +76,23 @@ void AWeaponBase::Tick(float DeltaTime)
 
 void AWeaponBase::FireWeapon()
 {
+	if (WeaponCurrentAmmunitionAmount > 0 && !bIsWeaponReloading)
+	{
+		// Make one shot.
+		WeaponShot();
+	}
+	else
+	{
+		Reload();
+	}
+}
+
+void AWeaponBase::WeaponShot()
+{
 	WeaponArrow = FindComponentByClass<UArrowComponent>();
 	if (!WeaponArrow)
 	{
-		UE_LOG(LogTemp, Error, 
+		UE_LOG(LogTemp, Error,
 			TEXT("Could not FireWeapon, WeaponArrow not found."));
 		return;
 	}
@@ -109,7 +125,7 @@ void AWeaponBase::FireWeapon()
 	if (!HitSomething)
 	{
 		// Debugging: Check if the ray hit something.
-		UE_LOG(LogTemp, Warning, 
+		UE_LOG(LogTemp, Warning,
 			TEXT("PEW! The shot was fired, but it didn`t hit anything."));
 		return;
 	}
@@ -134,6 +150,53 @@ void AWeaponBase::FireWeapon()
 
 	SpawnMuzzleEFX();
 
+	//Spend one ammo after shot.
+	WeaponCurrentAmmunitionAmount -= 1;
+}
+
+void AWeaponBase::WaitForReload()
+{
+	GetWorldTimerManager().ClearTimer(ReloadTimerHandle);
+	bIsWeaponReloading = false;
+	PlayerCharacter->bIsReloadingWeapon = false;
+}
+
+void AWeaponBase::Reload()
+{
+	if (WeaponMagazineAmount > 0 && !bIsWeaponReloading)
+	{
+		bIsWeaponReloading = true;
+		PlayerCharacter->bIsReloadingWeapon = true;
+
+		GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this,
+			&AWeaponBase::WaitForReload, ReloadTimeInterval, false);
+
+		UE_LOG(LogTemp, Error, TEXT("RELOAD!"));
+
+		PlayReloadWeaponSoundEFX(GetActorLocation());
+
+		// The amount of bullets that will be reloaded.
+		int32 ReloadedBullets = WeaponAmmunitionAmount -
+			WeaponCurrentAmmunitionAmount;
+
+		// Ensures that when the amount of ammunition left in the magazine
+		// is less than needed for a full reload, only the remaining bullets
+		// will be reloaded. 
+		if (ReloadedBullets > WeaponMagazineAmount)
+		{
+			ReloadedBullets = WeaponMagazineAmount;
+		}
+
+		WeaponMagazineAmount -= ReloadedBullets;
+
+		WeaponCurrentAmmunitionAmount += ReloadedBullets;
+	}
+	else if(!bIsWeaponReloading)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Out of Ammo."));
+		// Play ou of ammo sound efx.
+		PlayOutOfAmmoSoundEFX(GetActorLocation());
+	}
 }
 
 void AWeaponBase::SpawnMuzzleEFX()
@@ -162,6 +225,24 @@ void AWeaponBase::PlayGunshotSoundEFX(FVector PlaySoundLocation)
 	{
 		UGameplayStatics::PlaySoundAtLocation(WeaponArrow,
 			ShotSFX, PlaySoundLocation);
+	}
+}
+
+void AWeaponBase::PlayReloadWeaponSoundEFX(FVector PlaySoundLocation)
+{
+	if (ReloadSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(WeaponArrow,
+			ReloadSFX, PlaySoundLocation);
+	}
+}
+
+void AWeaponBase::PlayOutOfAmmoSoundEFX(FVector PlaySoundLocation)
+{
+	if (OutOfAmmoSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(WeaponArrow,
+			OutOfAmmoSFX, PlaySoundLocation);
 	}
 }
 
@@ -218,4 +299,6 @@ void AWeaponBase::HitAHardSurface(FHitResult HitResultInfo)
 			EAttachLocation::KeepWorldPosition, 60.f);
 	}
 }
+
+
 

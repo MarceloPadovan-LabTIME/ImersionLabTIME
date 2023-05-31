@@ -27,6 +27,9 @@ void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Spawn a Enemy after initial wait time(first SpawnEnemyTime), and repeat
+	// the function call SpawnEnemy() after seconds(second SpawnEnemyTime).
+	// TODO: Maybe create a variable for the initialWaitTime.
 	GetWorld()->GetTimerManager().SetTimer(NewEnemySpawnTimerHandle, this, &AEnemySpawner::SpawnEnemy, SpawnEnemyTime, true, SpawnEnemyTime);
 }
 
@@ -38,12 +41,22 @@ void AEnemySpawner::Tick(float DeltaTime)
 
 void AEnemySpawner::SpawnEnemy()
 {
+	// Chose a random location inside SpawnAreaVolume.
 	SpawnLocation = UKismetMathLibrary::RandomPointInBoundingBox(
 		GetActorLocation(), SpawnAreaVolume->GetScaledBoxExtent());
 
-	FRotator SpawnRot = GetActorRotation();
+	// Randomize the Y(Yaw) rotation for SpawnEnemy.
+	const float RandomYRotation = FMath::RandRange(0.0f, 360.0f);
+	const FRotator RngSpawnRot = FRotator(0, RandomYRotation, 0);
 
+	// A Parameter to esnures the enemies will not spawn inside of 
+	// scene obstacles.
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	// It actually spawns the enemy.
 	GetWorld()->SpawnActor<AEnemyCharacterBase>(BP_EnemyCharacter,
-		SpawnLocation, SpawnRot);
+		SpawnLocation, RngSpawnRot, Params);
 }
 

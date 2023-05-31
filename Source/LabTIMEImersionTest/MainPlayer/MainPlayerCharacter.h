@@ -88,6 +88,9 @@ public:
 	/** Handles the fire action of the player character */
 	void Fire();
 
+	/* Handles the action of reloading a weapon*/
+	void WeaponReload();
+
 	/** 
 	* A Reference of Weapon class, to spawn a BP copy in the character's hand
 	* and use all its features, like shot action, realod action(WYP).
@@ -102,6 +105,10 @@ public:
 	/** Create a reference for player weapons. */
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	TSubclassOf<class AWeaponBase> BP_Weapon_AssaultRifle;
+
+	/** Flag: indicates the player is reloading the gun */
+	UPROPERTY(BlueprintReadOnly, Category = "Info")
+	bool bIsReloadingWeapon;
 
 protected:
 	/** Called when the game starts or when spawned */
@@ -126,8 +133,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Info")
 	bool bIsDead;
 
-	/**/
+	
+
+	/** A position to respawn when killed */
 	UPROPERTY(BlueprintReadOnly, Category = "Info")
-		FVector RespawnLocation;
+	FVector RespawnLocation;
 
 };

@@ -27,6 +27,9 @@ public:
 	/** Fires the weapon */
 	virtual void FireWeapon();
 
+	/** Handle the Reload Action of an weapon */
+	void Reload();
+
 public:
 	/** Getter to the weapon's current ammunition amount */
 	UFUNCTION(BlueprintCallable, 
@@ -38,6 +41,10 @@ public:
 		meta = (Tooltip = "Getter to the weapon's name"))
 	FString GetWeaponName() { return WeaponName; }
 
+public:
+	/** Reference:Player Character to use his public variables and functions */
+	class AMainPlayerCharacter* PlayerCharacter;
+
 protected:
 	/** Called when the game starts or when spawned */
 	virtual void BeginPlay() override;
@@ -48,6 +55,13 @@ protected:
 
 	/** Every time a shot is made, this function will play the shot sound */
 	void PlayGunshotSoundEFX(FVector PlaySoundLocation);
+
+	/** Every time a reload is made, this function will play the reload sound */
+	void PlayReloadWeaponSoundEFX(FVector PlaySoundLocation);
+	
+	/** Every time a shot is made with no ammo, this function will play the
+	out of ammo sound */
+	void PlayOutOfAmmoSoundEFX(FVector PlaySoundLocation);
 
 	/** 
 	* When the shot hit a organic body, this function will spawn a
@@ -61,15 +75,29 @@ protected:
 	* this function will spawn a Hit Effect and a Decal with random size 
 	*/
 	void HitAHardSurface(FHitResult HitResultInfo);
+	
+	/** Handle the single shot execution of an weapon */
+	void WeaponShot();
+
+	/** Delegate Function, the Weapon need to wait for the reload time to shot
+	again */
+    void WaitForReload();
 
 protected:
 	/** 
 	* The weapon ammunition amount. 
 	* The bullet rounds amount it can fire in a row 
 	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, 
-		meta=(Tooltip="The weapon ammunition amount", AllowPrivateAccess=True))
-	int32 WeaponAmmunitionAmount = 0;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	int32 WeaponAmmunitionAmount = 30;
+
+	/* The weapon's magazine size */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
+	int32 WeaponMagazineSize = 3;
+
+	/** The weapon magazine amount of bullets rounds. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
+	int32 WeaponMagazineAmount = WeaponAmmunitionAmount * WeaponMagazineSize;
 
 	/** The weapon's name */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, 
@@ -105,6 +133,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "HitEFX")
 	class UMaterialInterface* HitDecalVFX;
 
+	/** The weapon`s reload sound effect (SFX) */
+	UPROPERTY(EditAnywhere, Category = "Reload")
+	class USoundBase* ReloadSFX;
+
+	/** The weapon`s out of ammo sound effect (SFX) */
+	UPROPERTY(EditAnywhere, Category = "Reload")
+	class USoundBase* OutOfAmmoSFX;
+
 	/** Weapon Atributes */
 	/** Manipulate the amount of damage the weapon can induce on Player */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Atributes")
@@ -117,8 +153,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
 	float WeaponMaxRange = 8000.0f;
 
+	/** Handle the reload time interval */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Reload")
+	float ReloadTimeInterval = 3.0f;
 
 protected:
 	/** The amount of ammunition the weapon still has on it's chamber */
 	int32 WeaponCurrentAmmunitionAmount = 0;
+
+	/** Check if the weapon can shot*/
+	bool bIsWeaponReloading = false;
+
+	/** The Timer Handle for reloads */
+	FTimerHandle ReloadTimerHandle;
 };

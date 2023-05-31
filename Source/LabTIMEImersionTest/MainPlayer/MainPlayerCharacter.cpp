@@ -160,6 +160,11 @@ void AMainPlayerCharacter::SetupPlayerInputComponent
 	// Bind the Fire with a weapon action
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this,
 		&AMainPlayerCharacter::Fire);
+
+	// Bind the Weapon reload action
+	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::WeaponReload);
+
 }
 
 void AMainPlayerCharacter::MoveCharacterForward(float AxisValue)
@@ -197,5 +202,10 @@ void AMainPlayerCharacter::JumpNotAllowed()
 void AMainPlayerCharacter::Fire()
 {
 	PlayerPrimaryWeapon->FireWeapon();
+}
+
+void AMainPlayerCharacter::WeaponReload()
+{
+	PlayerPrimaryWeapon->Reload();
 }
 

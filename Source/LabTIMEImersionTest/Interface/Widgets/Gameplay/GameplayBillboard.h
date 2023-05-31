@@ -34,6 +34,4 @@ private:
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* ScoreText;
 
-	
-	
 };
