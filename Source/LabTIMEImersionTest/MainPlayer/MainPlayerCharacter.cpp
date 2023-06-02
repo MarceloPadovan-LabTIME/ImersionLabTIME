@@ -16,6 +16,8 @@
 #include "Components/ArrowComponent.h"
 #include "Components/SceneComponent.h"
 #include "WorldCollision.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Engine/LatentActionManager.h"
 
 
 
@@ -42,8 +44,8 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	
 
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
-	GetCharacterMovement()->AirControl = 0.05f;
-	GetCharacterMovement()->JumpZVelocity = 425.f;
+	GetCharacterMovement()->AirControl = 3.0f;
+	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->GravityScale = 1.5f;
 	GetCharacterMovement()->CrouchedHalfHeight = 70.f;
 }
@@ -153,9 +155,9 @@ void AMainPlayerCharacter::SetupPlayerInputComponent
 
 	// Bind the jump action
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, 
-		&AMainPlayerCharacter::MyJump);
+		&ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, 
-		&AMainPlayerCharacter::JumpNotAllowed);
+		&ACharacter::StopJumping);
 	
 	// Bind the Fire with a weapon action
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this,
@@ -192,6 +194,26 @@ void AMainPlayerCharacter::StandUp()
 void AMainPlayerCharacter::MyJump()
 {
 	bIsJumping = true;
+
+	float X = GetCapsuleComponent()->GetRelativeLocation().X;
+	float Y = GetCapsuleComponent()->GetRelativeLocation().Y + 40;
+	float Z = GetCapsuleComponent()->GetRelativeLocation().Z + 100;
+
+	FRotator CapsuleRot = GetCapsuleComponent()->GetRelativeRotation();
+
+	FLatentActionInfo LatentInfo;
+
+	LatentInfo.CallbackTarget = this;
+
+	LatentInfo.UUID = GetUniqueID();
+
+	LatentInfo.ExecutionFunction = "Jump";
+
+	LatentInfo.Linkage = 0;
+
+	UKismetSystemLibrary::MoveComponentTo(GetCapsuleComponent(),
+		FVector(X, Y, Z), CapsuleRot, false, false, 0.5f, false,
+		EMoveComponentAction::Move, LatentInfo);
 }
 
 void AMainPlayerCharacter::JumpNotAllowed()

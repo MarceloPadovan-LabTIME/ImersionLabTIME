@@ -99,7 +99,7 @@ public:
 
 public:
 	/** Flag for checking Jumping States. */
-	UPROPERTY(BlueprintReadOnly, Category = "Jump")
+	UPROPERTY(BlueprintReadWrite, Category = "Jump")
 	bool bIsJumping;
 	
 	/** Create a reference for player weapons. */

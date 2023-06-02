@@ -44,11 +44,11 @@ public:
 
 	/** Handles the consequences of dying, animation, stop acting, and more */
 	UFUNCTION()
-		void Die();
+	void Die();
 
 	/** Handles the Enemy Respawn, The same actor return to life */
 	UFUNCTION()
-		void Respawn();
+	void Respawn();
 
 	/** Handles the Spawn VisualEffect When the Enemy is Spawned in the scene*/
 	UFUNCTION()
@@ -74,7 +74,7 @@ protected:
 protected:
 	/** Gives a Weapon to the Enemy. Otherwise is not a fair play. */
 	UFUNCTION()
-		void GetAWeapon();
+	void GetAWeapon();
 
 protected:
 	/* Let`s give a weapon to the enemy, like player */
@@ -117,9 +117,10 @@ protected:
 	class ALabTIMEImersionTestGameModeBase* MainGameMode = nullptr;
 
 protected:
-	/** The timer handle for the Enemy respawn */
-	FTimerHandle RespawnTimerHandle;
-
 	/** The Timer Handle for the New Enemies Spawn */
 	FTimerHandle NewEnemySpawnTimerHandle;
+
+private:
+	/** The timer handle for the Enemy respawn */
+	FTimerHandle RespawnTimerHandle;
 };
