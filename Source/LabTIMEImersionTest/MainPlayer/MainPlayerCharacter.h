@@ -24,7 +24,7 @@ public:
 	UFUNCTION()
 	float GetHealth();
 
-	/* Check the character`s current status regarding life and death */
+	/** Check the character`s current status regarding life and death */
 	UFUNCTION()
 	bool bIsThisCharacterDead();
 
@@ -35,7 +35,7 @@ public:
 	UFUNCTION()
 	void Die();
 
-	/* 
+	/** 
 	* Handles the character's respawn. After dying, the character will be
 	* repawned at random location to continue acting until the game's mode end.
 	* Or call the GameOver state, and reload the scene.
@@ -88,23 +88,31 @@ public:
 	/** Handles the fire action of the player character */
 	void Fire();
 
-	/* Handles the action of reloading a weapon*/
+	/* Handle the stop firing action of the player character */
+	void StopFiring();
+
+	/** Handles the action of reloading a weapon*/
 	void WeaponReload();
 
-	/** 
-	* A Reference of Weapon class, to spawn a BP copy in the character's hand
+public:
+	/**
+    * A Reference of Weapon class, to spawn a BP copy in the character's hand
 	* and use all its features, like shot action, realod action(WYP).
 	*/
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
 	class AWeaponBase* PlayerPrimaryWeapon;
 
-public:
 	/** Flag for checking Jumping States. */
 	UPROPERTY(BlueprintReadWrite, Category = "Jump")
 	bool bIsJumping;
+
+	/** Flag for checking the Shooting States. */
+	UPROPERTY(BlueprintReadWrite, Category = "ShotWeapon")
+	bool bIsShooting;
 	
 	/** Create a reference for player weapons. */
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TSubclassOf<class AWeaponBase> BP_Weapon_AssaultRifle;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Weapon")
+	TSubclassOf<AWeaponBase> BP_Weapon;
 
 	/** Flag: indicates the player is reloading the gun */
 	UPROPERTY(BlueprintReadOnly, Category = "Info")
@@ -132,8 +140,6 @@ protected:
 	/** Flag: indicates the player is Dead or not */
 	UPROPERTY(BlueprintReadOnly, Category = "Info")
 	bool bIsDead;
-
-	
 
 	/** A position to respawn when killed */
 	UPROPERTY(BlueprintReadOnly, Category = "Info")

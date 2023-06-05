@@ -20,10 +20,32 @@ class LABTIMEIMERSIONTEST_API AAutomaticWeapon : public AWeaponBase
 	GENERATED_BODY()
 	
 public:
+	/** Called every frame */
+	virtual void Tick(float DeltaTime) override;
+
+public:
 	/** 
 	* Fires the automatic weapon. 
 	* In this case, if the player holds the mouse buttom, 
 	* the weapon will keep firing until we have no ammo left.
 	*/
 	virtual void FireWeapon() override;
+
+	/** 
+	* When release the fire buttom, this function is called to reset the
+	* TimerHandle and SpreadValue.
+	*/
+	virtual void StopFiringWeapon() override;
+
+	/** This function will be called to return corsshair to defaults
+	configutation after consecultives shots, making a smoothed return */
+	void SmoothCrosshairReturn();
+
+
+private:
+	/* The Timer Handle for Consecultive shots */
+	FTimerHandle ShootTimerHandle;
+
+	/* The Timer Handle for smooth crosshair reset */
+	FTimerHandle SmoothCrosshairTimeHandle;
 };

@@ -19,6 +19,7 @@
 #include "GameFramework/Character.h"
 #include "LabTIMEImersionTest/Enemies/Base/EnemyCharacterBase.h"
 #include "LabTIMEImersionTest/MainPlayer/MainPlayerCharacter.h"
+#include "Camera/CameraComponent.h"
 
 AWeaponBase::AWeaponBase()
 {
@@ -40,13 +41,15 @@ AWeaponBase::AWeaponBase()
 	// TO DO:
 	// Find a way to create multiple variants of weapon`s type,
 	// and change your mesh.
+	/*
 	ConstructorHelpers::FObjectFinder<USkeletalMesh>Malha(TEXT
-	("SkeletalMesh'/Game/Art/Meshes/Guns/SkeletalMeshes/SkeletalM_AK47.SkeletalM_AK47'"));
+		("SkeletalMesh'/Game/Art/Meshes/Guns/SkeletalMeshes/SkeletalM_AK47.SkeletalM_AK47'"));
 
 	if (Malha.Succeeded())
 	{
 		MalhaDaArma->SetSkeletalMesh(Malha.Object);
 	}
+	*/
 
 	WeaponArrow = CreateDefaultSubobject<UArrowComponent>(
 		FName("Seta da Arma"));
@@ -66,6 +69,12 @@ void AWeaponBase::BeginPlay()
 	if (!PlayerCharacter)
 	{
 		UE_LOG(LogTemp, Error, TEXT("PlayerCharacter not found"));
+	}
+
+	CameraManager = Cast<APlayerCameraManager>(GetWorld()->GetFirstPlayerController()->PlayerCameraManager);
+	if (!CameraManager)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Player Camera Manager not found"));
 	}
 }
 
@@ -87,8 +96,20 @@ void AWeaponBase::FireWeapon()
 	}
 }
 
+void AWeaponBase::StopFiringWeapon()
+{
+	WeaponSpreadCurrentValue = 0.0f;
+}
+
 void AWeaponBase::WeaponShot()
 {
+	// Needs this check to stop the auto fire on automatic weapons.
+	/*if (WeaponCurrentAmmunitionAmount <= 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Stopping fully auto fire, Out of Ammo!"));
+		return;
+	}*/
+
 	WeaponArrow = FindComponentByClass<UArrowComponent>();
 	if (!WeaponArrow)
 	{
@@ -99,11 +120,23 @@ void AWeaponBase::WeaponShot()
 
 	// Create a shot raycast:
 	// Set weapon ArrowComponent as FirePoint Origin.
-	FVector FirePoint = WeaponArrow->GetComponentLocation();
+	//FVector FirePoint = WeaponArrow->GetComponentLocation();
+	FVector FirePoint = CameraManager->GetCameraLocation();
 	// Set Fire Direction, uses ArrowComponent as Reference.
-	FVector Dir = WeaponArrow->GetComponentRotation().Vector();
-	// Handles the raycast lenght and range.
-	FVector EndRaycastTrack = FirePoint + (Dir * WeaponMaxRange);
+	FVector Dir = CameraManager->GetCameraRotation().Vector();
+	
+	// ------ Spread Logic: -------
+	const int32 RandomSeed = FMath::Rand();
+	FRandomStream WeaponRandomStream = RandomSeed;
+	const float CurrentSpread = WeaponSpreadCurrentValue;
+	const float SpreadCone = FMath::DegreesToRadians(
+		WeaponSpreadCurrentValue * 0.5);
+	const FVector ShootDir = WeaponRandomStream.VRandCone(Dir, SpreadCone,
+		SpreadCone);
+	// ------ End Spread Logic. ------
+	
+	// Handles the raycast behavior, lenght and range.
+	FVector EndRaycastTrack = FirePoint + (ShootDir * WeaponMaxRange);
 	FHitResult HitResultInfo;
 
 	FCollisionQueryParams Params;
@@ -150,8 +183,14 @@ void AWeaponBase::WeaponShot()
 
 	SpawnMuzzleEFX();
 
-	//Spend one ammo after shot.
+	// Spend one ammo after shot.
 	WeaponCurrentAmmunitionAmount -= 1;
+	UE_LOG(LogTemp, Warning, TEXT("Current Ammo: %d  Current Magazine: %d"),
+		WeaponCurrentAmmunitionAmount, WeaponMagazineAmount);
+
+	// Add SpreadValue for consecultive shots.
+	WeaponSpreadCurrentValue += WeaponSpreadCoef;
+	UE_LOG(LogTemp, Warning, TEXT("Weapon Spread: %f"), WeaponSpreadCurrentValue);
 }
 
 void AWeaponBase::WaitForReload()

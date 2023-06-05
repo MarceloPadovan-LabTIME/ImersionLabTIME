@@ -27,6 +27,12 @@ public:
 	/** Fires the weapon */
 	virtual void FireWeapon();
 
+	/** Stop fires the weapon */
+	virtual void StopFiringWeapon();
+
+	/** Handle the single shot execution of an weapon */
+	void WeaponShot();
+
 	/** Handle the Reload Action of an weapon */
 	void Reload();
 
@@ -75,29 +81,18 @@ protected:
 	* this function will spawn a Hit Effect and a Decal with random size 
 	*/
 	void HitAHardSurface(FHitResult HitResultInfo);
-	
-	/** Handle the single shot execution of an weapon */
-	void WeaponShot();
+
+	/** Handle the weapon's spread property */
+	//void WeaponSpread();
 
 	/** Delegate Function, the Weapon need to wait for the reload time to shot
 	again */
     void WaitForReload();
 
 protected:
-	/** 
-	* The weapon ammunition amount. 
-	* The bullet rounds amount it can fire in a row 
-	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	int32 WeaponAmmunitionAmount = 30;
-
-	/* The weapon's magazine size */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
-	int32 WeaponMagazineSize = 3;
-
-	/** The weapon magazine amount of bullets rounds. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
-	int32 WeaponMagazineAmount = WeaponAmmunitionAmount * WeaponMagazineSize;
+	/* Ref: Acess the CameraManager to get the CameraViewport*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arma")
+	class APlayerCameraManager* CameraManager = nullptr;
 
 	/** The weapon's name */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, 
@@ -141,21 +136,56 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Reload")
 	class USoundBase* OutOfAmmoSFX;
 
-	/** Weapon Atributes */
+	/** ---------------  Weapon Atributes  --------------- */
+
+	/**
+	* The weapon ammunition amount.
+	* The bullet rounds amount it can fire in a row
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	int32 WeaponAmmunitionAmount = 30;
+
+	/* The weapon's magazine size */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
+	int32 WeaponMagazineSize = 3;
+
+	/** The weapon magazine amount of bullets rounds. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
+	int32 WeaponMagazineAmount = WeaponAmmunitionAmount * WeaponMagazineSize;
+
 	/** Manipulate the amount of damage the weapon can induce on Player */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Atributes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
 	float DamageOnPlayer = 0.25f;
+
 	/** Manipulate the amount of damage the weapon can induce on Enemies */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Atributes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
 	float DamageOnEnemy = 20.0f;
 
 	/** Handle the weapon`s max range(and raycast range) */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float WeaponMaxRange = 8000.0f;
 
 	/** Handle the reload time interval */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Reload")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float ReloadTimeInterval = 3.0f;
+
+	/* Handles the time between shots */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
+	float ShotInterval = 0.1f;
+
+	/** Handles the Smooth Time to reset the Crosshair,
+	The smaller the number, the faster it returns */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
+	float SmoothCrosshairInterval = 0.01f;
+
+	/** Handle the current weapon spread value, the smaller the value,
+	more accurate it will be. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
+	float WeaponSpreadCurrentValue = 0.0f;
+
+	/**  The amount of value it will be increase after a consecultive shot */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
+	float WeaponSpreadCoef = 1.5f;
 
 protected:
 	/** The amount of ammunition the weapon still has on it's chamber */
@@ -166,4 +196,5 @@ protected:
 
 	/** The Timer Handle for reloads */
 	FTimerHandle ReloadTimerHandle;
+
 };

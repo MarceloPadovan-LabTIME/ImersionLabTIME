@@ -40,7 +40,10 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	// Create the first person camera component	
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(
 		TEXT("FirstPersonCamera"));
-	FirstPersonCameraComponent->SetupAttachment(GetMesh());
+	//FirstPersonCameraComponent->SetupAttachment(GetMesh());
+	FirstPersonCameraComponent->AttachToComponent(Cast<USceneComponent>(GetMesh()),
+		FAttachmentTransformRules::SnapToTargetIncludingScale,
+		FName("Head_Socket"));
 	
 
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
@@ -116,7 +119,7 @@ void AMainPlayerCharacter::BeginPlay()
 
 	// Spawn this character's weapon.
 	PlayerPrimaryWeapon = GetWorld()->SpawnActor<
-		AWeaponBase>(BP_Weapon_AssaultRifle, FTransform(), Params);
+		AWeaponBase>(BP_Weapon, FTransform(), Params);
 
 	// Attach the weapon to the character hand socket, previously created.
 	PlayerPrimaryWeapon->AttachToComponent(Cast<USceneComponent>(GetMesh()),
@@ -162,6 +165,8 @@ void AMainPlayerCharacter::SetupPlayerInputComponent
 	// Bind the Fire with a weapon action
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this,
 		&AMainPlayerCharacter::Fire);
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this,
+		&AMainPlayerCharacter::StopFiring);
 
 	// Bind the Weapon reload action
 	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this,
@@ -223,7 +228,14 @@ void AMainPlayerCharacter::JumpNotAllowed()
 
 void AMainPlayerCharacter::Fire()
 {
+	bIsShooting = true;
 	PlayerPrimaryWeapon->FireWeapon();
+}
+
+void AMainPlayerCharacter::StopFiring()
+{
+	bIsShooting = false;
+	PlayerPrimaryWeapon->StopFiringWeapon();
 }
 
 void AMainPlayerCharacter::WeaponReload()
