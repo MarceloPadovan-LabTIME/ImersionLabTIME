@@ -76,6 +76,9 @@ void AWeaponBase::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Player Camera Manager not found"));
 	}
+
+	// Setup the Max Ammo for the weapon.
+	WeaponMagazineAmount = WeaponAmmunitionAmount * WeaponMagazineSize;
 }
 
 void AWeaponBase::Tick(float DeltaTime)

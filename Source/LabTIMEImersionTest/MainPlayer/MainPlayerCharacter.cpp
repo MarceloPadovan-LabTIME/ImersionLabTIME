@@ -12,15 +12,16 @@
 #include "GameFramework/Character.h"
 #include "Engine/World.h"
 #include "LabTIMEImersionTest/Weapons/Base/AutomaticWeapon.h"
+#include "LabTIMEImersionTest/Weapons/Base/WeaponBase.h"
 #include "Engine/EngineTypes.h"
 #include "Components/ArrowComponent.h"
 #include "Components/SceneComponent.h"
 #include "WorldCollision.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Engine/LatentActionManager.h"
+#include "Containers/Array.h"
 
-
-
+// Constructor
 AMainPlayerCharacter::AMainPlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -45,7 +46,7 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 		FAttachmentTransformRules::SnapToTargetIncludingScale,
 		FName("Head_Socket"));
 	
-
+	// Jump & Crouch Config.
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
 	GetCharacterMovement()->AirControl = 3.0f;
 	GetCharacterMovement()->JumpZVelocity = 700.f;
@@ -104,6 +105,21 @@ void AMainPlayerCharacter::Respawn()
 	// Give back the input controllers.
 }
 
+void AMainPlayerCharacter::DoubleJump()
+{
+	if (DoubleJumpCounter <= 1)
+	{
+		ACharacter::LaunchCharacter(FVector(0, 0, JumpHeight), false, true);
+
+		DoubleJumpCounter++;
+	}
+}
+
+void AMainPlayerCharacter::Landed(const FHitResult& Hit)
+{
+	DoubleJumpCounter = 0;
+}
+
 void AMainPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -111,20 +127,47 @@ void AMainPlayerCharacter::BeginPlay()
 	// Ensures that the player character will be possess when the game starts.
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
+	SpawnWeapons();
+
+}
+
+void AMainPlayerCharacter::SpawnWeapons()
+{
 	// Create a parameter which will ensure that where will be no
 	// collision conflicts
 	FActorSpawnParameters Params;
-	Params.SpawnCollisionHandlingOverride = 
+	Params.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	// Spawn this character's weapon.
-	PlayerPrimaryWeapon = GetWorld()->SpawnActor<
-		AWeaponBase>(BP_Weapon, FTransform(), Params);
+	int32 Index = 0;
+	for (const TSubclassOf<AWeaponBase>& Weapons : BP_Weapon)
+	{
+		// Spawn this character's weapon.
+		AWeaponBase *WeaponToSpawn = GetWorld()->SpawnActor<
+			AWeaponBase>(Weapons, FTransform(), Params);
+		if (!WeaponToSpawn)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Unable to spawn weapon in world."));
 
-	// Attach the weapon to the character hand socket, previously created.
-	PlayerPrimaryWeapon->AttachToComponent(Cast<USceneComponent>(GetMesh()),
-		FAttachmentTransformRules::SnapToTargetIncludingScale,
-		FName("Socket_Weapon"));
+			return;
+		}
+		// Add the spawned weapon to the Arraylist.
+		WeaponsArray.Add(WeaponToSpawn);
+
+		// Attach the weapon to the character hand socket, previously created.
+		WeaponsArray[Index]->AttachToComponent(Cast<USceneComponent>(GetMesh()),
+			FAttachmentTransformRules::SnapToTargetIncludingScale,
+			FName("Socket_Weapon"));
+
+		// Hide(disable) the Spawned weapon.
+		WeaponsArray[Index]->SetActorHiddenInGame(true);
+
+		Index++;
+	}
+
+	PlayerPrimaryWeapon = WeaponsArray[0];
+	PlayerPrimaryWeapon->SetActorHiddenInGame(false);
+
 
 }
 
@@ -144,6 +187,12 @@ void AMainPlayerCharacter::SetupPlayerInputComponent
 	PlayerInputComponent->BindAxis("MoveRight", this, 
 		&AMainPlayerCharacter::MoveCharacterRight);
 
+	// Bind the Sneak type movement speed of the characater
+	PlayerInputComponent->BindAction("Sneak", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::Sneak);
+	PlayerInputComponent->BindAction("Sneak", EInputEvent::IE_Released, this,
+		&AMainPlayerCharacter::StopSneaking);
+
 	// Bind the controller Yaw and Pitch movement 
 	PlayerInputComponent->BindAxis("Turn", this, 
 		&AMainPlayerCharacter::AddControllerYawInput);
@@ -158,7 +207,7 @@ void AMainPlayerCharacter::SetupPlayerInputComponent
 
 	// Bind the jump action
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, 
-		&ACharacter::Jump);
+		&AMainPlayerCharacter::DoubleJump);
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, 
 		&ACharacter::StopJumping);
 	
@@ -172,6 +221,23 @@ void AMainPlayerCharacter::SetupPlayerInputComponent
 	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this,
 		&AMainPlayerCharacter::WeaponReload);
 
+	// Bind the Swap Weapon action
+	// Next Weapon
+	PlayerInputComponent->BindAction("SwitchNextWeapon", 
+		EInputEvent::IE_Pressed, this, 
+		&AMainPlayerCharacter::SwitchNextWeapon);
+	// Previous Weapon
+	PlayerInputComponent->BindAction("SwitchPreviousWeapon",
+		EInputEvent::IE_Pressed, this, 
+		&AMainPlayerCharacter::SwitchPreviousWeapon);
+
+	// Bind the fixed weapon selection and hot keys.
+	PlayerInputComponent->BindAction("Weapon_1", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::SelectFirstWeapon);
+	PlayerInputComponent->BindAction("Weapon_2", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::SelectSecondWeapon);
+	PlayerInputComponent->BindAction("Weapon_3", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::SelectThirdWeapon);
 }
 
 void AMainPlayerCharacter::MoveCharacterForward(float AxisValue)
@@ -226,6 +292,16 @@ void AMainPlayerCharacter::JumpNotAllowed()
 	bIsJumping = false;
 }
 
+void AMainPlayerCharacter::Sneak()
+{
+	GetCharacterMovement()->MaxWalkSpeed *= SneakSpeedCoef;
+}
+
+void AMainPlayerCharacter::StopSneaking()
+{
+	GetCharacterMovement()->MaxWalkSpeed /= SneakSpeedCoef;
+}
+
 void AMainPlayerCharacter::Fire()
 {
 	bIsShooting = true;
@@ -242,4 +318,85 @@ void AMainPlayerCharacter::WeaponReload()
 {
 	PlayerPrimaryWeapon->Reload();
 }
+
+void AMainPlayerCharacter::SelectFirstWeapon()
+{
+	PlayerPrimaryWeapon = WeaponsArray[0];
+	WeaponsArray[0]->SetActorHiddenInGame(false);
+
+	WeaponsArray[1]->SetActorHiddenInGame(true);
+	WeaponsArray[2]->SetActorHiddenInGame(true);
+}
+
+void AMainPlayerCharacter::SelectSecondWeapon()
+{
+	PlayerPrimaryWeapon = WeaponsArray[1];
+	PlayerPrimaryWeapon->SetActorHiddenInGame(false);
+
+	WeaponsArray[0]->SetActorHiddenInGame(true);
+	WeaponsArray[2]->SetActorHiddenInGame(true);
+}
+
+void AMainPlayerCharacter::SelectThirdWeapon()
+{
+	PlayerPrimaryWeapon = WeaponsArray[2];
+	PlayerPrimaryWeapon->SetActorHiddenInGame(false);
+
+	WeaponsArray[0]->SetActorHiddenInGame(true);
+	WeaponsArray[1]->SetActorHiddenInGame(true);
+}
+
+void AMainPlayerCharacter::SwitchNextWeapon()
+{
+	for (int i = 0; i < WeaponsArray.Num(); i++)
+	{
+		if (PlayerPrimaryWeapon == WeaponsArray[i] 
+			&& i < WeaponsArray.Num() - 1)
+		{
+			WeaponsArray[i]->SetActorHiddenInGame(true);
+			PlayerPrimaryWeapon = WeaponsArray[i+1];
+			WeaponsArray[i+1]->SetActorHiddenInGame(false);
+
+			return;
+		}
+		else if (PlayerPrimaryWeapon == WeaponsArray[i] 
+			&& i==WeaponsArray.Num()-1) 
+		{
+			WeaponsArray[i]->SetActorHiddenInGame(true);
+			PlayerPrimaryWeapon = WeaponsArray[0];
+			WeaponsArray[0]->SetActorHiddenInGame(false);
+
+			return;
+		}
+	}
+	
+	UE_LOG(LogTemp, Error, TEXT("WeaponName: %s"), 
+		*FString(PlayerPrimaryWeapon->GetWeaponName()));
+}
+
+void AMainPlayerCharacter::SwitchPreviousWeapon()
+{
+	for (int i = 0; i < WeaponsArray.Num(); i++)
+	{
+		if (PlayerPrimaryWeapon == WeaponsArray[i] && i > 0)
+		{
+			WeaponsArray[i]->SetActorHiddenInGame(true);
+			PlayerPrimaryWeapon = WeaponsArray[i - 1];
+			WeaponsArray[i-1]->SetActorHiddenInGame(false);
+			return;
+		}
+		else if (PlayerPrimaryWeapon == WeaponsArray[i] && i == 0 )
+		{
+			WeaponsArray[i]->SetActorHiddenInGame(true);
+			PlayerPrimaryWeapon = WeaponsArray[WeaponsArray.Num() - 1];
+			WeaponsArray[WeaponsArray.Num() - 1]->SetActorHiddenInGame(false);
+			return;
+		}
+	}
+
+	UE_LOG(LogTemp, Error, TEXT("WeaponName: %s"), 
+		*FString(PlayerPrimaryWeapon->GetWeaponName()));
+}
+
+
 

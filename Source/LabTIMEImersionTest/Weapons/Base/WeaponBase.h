@@ -149,8 +149,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
 	int32 WeaponMagazineSize = 3;
 
-	/** The weapon magazine amount of bullets rounds. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
+	/** The weapon magazine amount of bullets rounds. 
+	(Ammo Amount * Magazine Size) */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes")
 	int32 WeaponMagazineAmount = WeaponAmmunitionAmount * WeaponMagazineSize;
 
 	/** Manipulate the amount of damage the weapon can induce on Player */

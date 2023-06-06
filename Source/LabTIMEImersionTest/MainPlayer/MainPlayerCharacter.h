@@ -43,6 +43,9 @@ public:
 	UFUNCTION()
 	void Respawn();
 
+	UFUNCTION()
+	void DoubleJump();
+
 public:
 	/** Sets default values for this character's properties */
 	AMainPlayerCharacter();
@@ -85,16 +88,39 @@ public:
     */
 	void JumpNotAllowed();
 
+	/** Handles the Sneak action, more precise movement, but slowly*/
+	void Sneak();
+
+	/** Handles the stop sneaking action of the player characater */
+	void StopSneaking();
+
 	/** Handles the fire action of the player character */
 	void Fire();
 
-	/* Handle the stop firing action of the player character */
+	/** Handle the stop firing action of the player character */
 	void StopFiring();
 
 	/** Handles the action of reloading a weapon*/
 	void WeaponReload();
 
+	/** Handles the action of selecting the first weapon of Array */
+	void SelectFirstWeapon();
+	/** Handles the action of selecting the second weapon of Array */
+	void SelectSecondWeapon();
+	/** Handles the action of selecting the third weapon of Array */
+	void SelectThirdWeapon();
+
+	/** Handles the action of switching for the next weapon */
+	void SwitchNextWeapon();
+	/** Handles the action of switching for the previous weapon */
+	void SwitchPreviousWeapon();
+
 public:
+	/* A Array of weapons, spawned in BeginPlay, this array store all weapons
+	the player can have at same time. */
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
+	TArray<class AWeaponBase*> WeaponsArray;
+
 	/**
     * A Reference of Weapon class, to spawn a BP copy in the character's hand
 	* and use all its features, like shot action, realod action(WYP).
@@ -109,10 +135,6 @@ public:
 	/** Flag for checking the Shooting States. */
 	UPROPERTY(BlueprintReadWrite, Category = "ShotWeapon")
 	bool bIsShooting;
-	
-	/** Create a reference for player weapons. */
-	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Weapon")
-	TSubclassOf<AWeaponBase> BP_Weapon;
 
 	/** Flag: indicates the player is reloading the gun */
 	UPROPERTY(BlueprintReadOnly, Category = "Info")
@@ -123,6 +145,16 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
+	/** Spawn all player weapons at BeginPlay */
+	void SpawnWeapons();
+
+	virtual void Landed(const FHitResult& Hit) override;
+
+protected:
+	/** Create a reference for player list of weapons. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+	TArray<TSubclassOf<AWeaponBase>> BP_Weapon;
+
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, 
 		Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -134,8 +166,12 @@ protected:
 	class USpringArmComponent* SpringArmCamera = nullptr;
 
 	/** Main atribute of the player character, health */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributos")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float Health = 100.0f;
+
+	/** The speed negative multiply for Sneak velocity */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes")
+	float SneakSpeedCoef = 0.4f;
 
 	/** Flag: indicates the player is Dead or not */
 	UPROPERTY(BlueprintReadOnly, Category = "Info")
@@ -144,5 +180,11 @@ protected:
 	/** A position to respawn when killed */
 	UPROPERTY(BlueprintReadOnly, Category = "Info")
 	FVector RespawnLocation;
+
+	UPROPERTY()
+	int DoubleJumpCounter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attrbiutes")
+	float JumpHeight = 600.f;
 
 };
