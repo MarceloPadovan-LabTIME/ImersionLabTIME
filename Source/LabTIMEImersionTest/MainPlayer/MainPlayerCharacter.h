@@ -88,6 +88,12 @@ public:
     */
 	void JumpNotAllowed();
 
+	/** Handles the sprint action of player characater */
+	void Sprint();
+
+	/** Stop the Sprint action */
+	void StopSprint();
+
 	/** Handles the Sneak action, more precise movement, but slowly*/
 	void Sneak();
 
@@ -99,6 +105,12 @@ public:
 
 	/** Handle the stop firing action of the player character */
 	void StopFiring();
+
+	/** Handles the aiming down sight with a weapon action */
+	void Aiming();
+
+	/** Handles the Stop aiming down sight with a weapon action */
+	void StopAiming();
 
 	/** Handles the action of reloading a weapon*/
 	void WeaponReload();
@@ -129,16 +141,20 @@ public:
 	class AWeaponBase* PlayerPrimaryWeapon;
 
 	/** Flag for checking Jumping States. */
-	UPROPERTY(BlueprintReadWrite, Category = "Jump")
+	UPROPERTY(BlueprintReadWrite, Category = "Info")
 	bool bIsJumping;
 
 	/** Flag for checking the Shooting States. */
-	UPROPERTY(BlueprintReadWrite, Category = "ShotWeapon")
+	UPROPERTY(BlueprintReadWrite, Category = "Info")
 	bool bIsShooting;
 
 	/** Flag: indicates the player is reloading the gun */
 	UPROPERTY(BlueprintReadOnly, Category = "Info")
 	bool bIsReloadingWeapon;
+
+	/** Flag: indicates the player is aiming with the gun, used in animation */
+	UPROPERTY(BlueprintReadOnly, Category = "Info")
+	bool bIsAiming;
 
 protected:
 	/** Called when the game starts or when spawned */
@@ -147,7 +163,8 @@ protected:
 protected:
 	/** Spawn all player weapons at BeginPlay */
 	void SpawnWeapons();
-
+	
+	/* Handles the landed state of player(player hitting the ground) */
 	virtual void Landed(const FHitResult& Hit) override;
 
 protected:
@@ -169,9 +186,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float Health = 100.0f;
 
-	/** The speed negative multiply for Sneak velocity */
+	/** The speed multiply for Sneak velocity */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes")
-	float SneakSpeedCoef = 0.4f;
+	float SneakSpeedCoef = 0.6f;
+
+	/* The speed multiply for character movement velocity, run action */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes")
+	float SprintSpeedCoef = 2.0f;
 
 	/** Flag: indicates the player is Dead or not */
 	UPROPERTY(BlueprintReadOnly, Category = "Info")

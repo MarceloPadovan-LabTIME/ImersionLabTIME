@@ -56,6 +56,17 @@ AWeaponBase::AWeaponBase()
 	WeaponArrow->SetupAttachment(MalhaDaArma);
 	WeaponArrow->SetRelativeLocation(FVector(74.f, -1.f, 10.f));
 	WeaponArrow->SetRelativeScale3D(FVector(0.3f, 0.3f, 0.3f));
+
+
+	// Create the Aiming Camera Component.
+	AimingCameraComponent = CreateDefaultSubobject<UCameraComponent>(
+		TEXT("AimingCamera"));
+	AimingCameraComponent->SetWorldScale3D(FVector(0.25f));
+	// AimingCamera Setup Attachment it is done after weapon spawn.
+	AimingCameraComponent->AttachToComponent(Cast<USceneComponent>
+		(MalhaDaArma), FAttachmentTransformRules::SnapToTargetIncludingScale,
+		FName("Aiming_Socket"));
+	AimingCameraComponent->bAutoActivate = false;
 }
 
 void AWeaponBase::BeginPlay()

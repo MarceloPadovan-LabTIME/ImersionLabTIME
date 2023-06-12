@@ -20,6 +20,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Engine/LatentActionManager.h"
 #include "Containers/Array.h"
+#include "Components/SkeletalMeshComponent.h"
 
 // Constructor
 AMainPlayerCharacter::AMainPlayerCharacter()
@@ -38,14 +39,15 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	SpringArmCamera->AddRelativeLocation(FVector(0.f, 40.f, 50.f));
 	SpringArmCamera->SetupAttachment(RootComponent);
 
-	// Create the first person camera component	
+	//Create the first person camera component
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(
 		TEXT("FirstPersonCamera"));
-	//FirstPersonCameraComponent->SetupAttachment(GetMesh());
-	FirstPersonCameraComponent->AttachToComponent(Cast<USceneComponent>(GetMesh()),
+	FirstPersonCameraComponent->SetupAttachment(GetMesh());
+	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+	/*FirstPersonCameraComponent->AttachToComponent(Cast<USceneComponent>(GetMesh()),
 		FAttachmentTransformRules::SnapToTargetIncludingScale,
-		FName("Head_Socket"));
-	
+		FName("Head_Socket"));*/
+
 	// Jump & Crouch Config.
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
 	GetCharacterMovement()->AirControl = 3.0f;
@@ -128,7 +130,6 @@ void AMainPlayerCharacter::BeginPlay()
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
 	SpawnWeapons();
-
 }
 
 void AMainPlayerCharacter::SpawnWeapons()
@@ -155,8 +156,8 @@ void AMainPlayerCharacter::SpawnWeapons()
 		WeaponsArray.Add(WeaponToSpawn);
 
 		// Attach the weapon to the character hand socket, previously created.
-		WeaponsArray[Index]->AttachToComponent(Cast<USceneComponent>(GetMesh()),
-			FAttachmentTransformRules::SnapToTargetIncludingScale,
+		WeaponsArray[Index]->AttachToComponent(Cast<USceneComponent>
+			(GetMesh()), FAttachmentTransformRules::SnapToTargetIncludingScale,
 			FName("Socket_Weapon"));
 
 		// Hide(disable) the Spawned weapon.
@@ -167,8 +168,6 @@ void AMainPlayerCharacter::SpawnWeapons()
 
 	PlayerPrimaryWeapon = WeaponsArray[0];
 	PlayerPrimaryWeapon->SetActorHiddenInGame(false);
-
-
 }
 
 void AMainPlayerCharacter::Tick(float DeltaTime)
@@ -193,6 +192,12 @@ void AMainPlayerCharacter::SetupPlayerInputComponent
 	PlayerInputComponent->BindAction("Sneak", EInputEvent::IE_Released, this,
 		&AMainPlayerCharacter::StopSneaking);
 
+	// Bind the Sprint type movement of the characater
+	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::Sprint);
+	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Released, this,
+		&AMainPlayerCharacter::StopSprint);
+
 	// Bind the controller Yaw and Pitch movement 
 	PlayerInputComponent->BindAxis("Turn", this, 
 		&AMainPlayerCharacter::AddControllerYawInput);
@@ -216,6 +221,12 @@ void AMainPlayerCharacter::SetupPlayerInputComponent
 		&AMainPlayerCharacter::Fire);
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this,
 		&AMainPlayerCharacter::StopFiring);
+
+	// Bind the Aiming with a weapon action
+	PlayerInputComponent->BindAction("Aiming", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::Aiming);
+	PlayerInputComponent->BindAction("Aiming", EInputEvent::IE_Released, this,
+		&AMainPlayerCharacter::StopAiming);
 
 	// Bind the Weapon reload action
 	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this,
@@ -292,6 +303,16 @@ void AMainPlayerCharacter::JumpNotAllowed()
 	bIsJumping = false;
 }
 
+void AMainPlayerCharacter::Sprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed *= SprintSpeedCoef;
+}
+
+void AMainPlayerCharacter::StopSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed /= SprintSpeedCoef;
+}
+
 void AMainPlayerCharacter::Sneak()
 {
 	GetCharacterMovement()->MaxWalkSpeed *= SneakSpeedCoef;
@@ -312,6 +333,28 @@ void AMainPlayerCharacter::StopFiring()
 {
 	bIsShooting = false;
 	PlayerPrimaryWeapon->StopFiringWeapon();
+}
+
+void AMainPlayerCharacter::Aiming()
+{
+	bIsAiming = true;
+
+	FirstPersonCameraComponent->Deactivate();
+	PlayerPrimaryWeapon->AimingCameraComponent->Activate();
+
+	GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(
+		PlayerPrimaryWeapon, 0.25f);
+}
+
+void AMainPlayerCharacter::StopAiming()
+{
+	bIsAiming = false;
+
+	PlayerPrimaryWeapon->AimingCameraComponent->Deactivate();
+	FirstPersonCameraComponent->Activate();
+
+	GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(
+		this, 0.25f);
 }
 
 void AMainPlayerCharacter::WeaponReload()

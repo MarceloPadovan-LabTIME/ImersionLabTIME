@@ -51,6 +51,11 @@ public:
 	/** Reference:Player Character to use his public variables and functions */
 	class AMainPlayerCharacter* PlayerCharacter;
 
+public:
+	/** First person aiming down sight camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+	class UCameraComponent* AimingCameraComponent = nullptr;
+
 protected:
 	/** Called when the game starts or when spawned */
 	virtual void BeginPlay() override;
@@ -90,7 +95,7 @@ protected:
     void WaitForReload();
 
 protected:
-	/* Ref: Acess the CameraManager to get the CameraViewport*/
+	/** Ref: Acess the CameraManager to get the CameraViewport */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arma")
 	class APlayerCameraManager* CameraManager = nullptr;
 
