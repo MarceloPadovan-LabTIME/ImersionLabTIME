@@ -90,14 +90,14 @@ protected:
 	* the enemy characater can reduce before being inflicted on Health value
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
-	float Armor = 50.f;
+	float Armor = 0.f;
 
 	/* 
 	* Armor's complementation, this value is a percentage that represents
 	* how much damage will be reduced.
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
-	float ArmorEffectiveness = 75.f;
+	float ArmorEffectiveness = 0.75f;
 
 
 

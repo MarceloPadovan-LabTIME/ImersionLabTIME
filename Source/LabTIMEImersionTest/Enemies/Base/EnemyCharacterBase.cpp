@@ -23,6 +23,13 @@ void AEnemyCharacterBase::BeginPlay()
 
 	GetAWeapon();
 	PlaySpawnEFX();
+
+	/*
+	if(bAllowArmor)
+	{
+		Armor = 50.f;
+	}
+	*/
 }
 
 void AEnemyCharacterBase::Tick(float DeltaTime)
@@ -52,8 +59,22 @@ void AEnemyCharacterBase::GetAWeapon()
 
 void AEnemyCharacterBase::SetHealth(float Damage)
 {
+	/*
+	if(bAllowArmor)
+	{
+		Damage = Damage * (1 - ArmorEffectiveness);
+		Armor -= Damage;
+
+		if(Armor <= 0.0f)
+		{
+			Armor = 0.f;
+			Damage = Damage * 4;
+		}
+	}
+    */
+
 	// Check if the Enemy still have Health.
-	if (Health > 0.0f)
+	if (Health > 0.0f && Armor <= 0.0f)
 	{
 		Health -= Damage;
 	}

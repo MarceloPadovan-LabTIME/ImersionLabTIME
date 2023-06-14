@@ -21,11 +21,19 @@ public:
 
 	/*
 	* If true : The rules of the current game mode will be set by time,
-	* that is, there will be a countdown(30s/60s) that the player will have to
-	* eliminate as many enemies as possible. 
+	* that is, there will be a countdown(30s/60s/90s) that the player will
+	* have to eliminate as many enemies as possible. 
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameModes")
-		bool bIsGameModeByTime = false;
+	bool bIsGameModeByTime = false;
+
+	/* 
+	* A array of GameModeByTime options,
+	* the respective countdowns values : 30, 60, 90 seconds.
+	* this value represents the duration of the game.
+	*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GameModes")
+	int GameModeByTimeOptions[3] = {30,60,90};
 
 	/** 
 	* If true: The rules of the current game mode will be by count of kills,

@@ -55,7 +55,7 @@ public:
 
 	/** Called to bind functionality to input */
 	virtual void SetupPlayerInputComponent(
-		class UInputComponent* PlayerInputComponent) override;
+	class UInputComponent* PlayerInputComponent) override;
 
 	/** 
 	* Handles the forward movement of the character. 
@@ -161,10 +161,13 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
+	//UFUNCTIONS
+
+protected:
 	/** Spawn all player weapons at BeginPlay */
 	void SpawnWeapons();
 	
-	/* Handles the landed state of player(player hitting the ground) */
+	/** Handles the landed state of player(player hitting the ground) */
 	virtual void Landed(const FHitResult& Hit) override;
 
 protected:
@@ -190,7 +193,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes")
 	float SneakSpeedCoef = 0.6f;
 
-	/* The speed multiply for character movement velocity, run action */
+	/** The speed multiply for character movement velocity, run action */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes")
 	float SprintSpeedCoef = 2.0f;
 
@@ -202,10 +205,27 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Info")
 	FVector RespawnLocation;
 
+	/** Count the jump number, with this we can enable the double jump. */
 	UPROPERTY()
 	int DoubleJumpCounter;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attrbiutes")
+	/** New height of the jump, used to launch the character into the air.*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes")
 	float JumpHeight = 600.f;
+
+	/** Ptr to reference the main GameMode script. */
+	//UPROPERTY()
+	//class ALabTIMEImersionTestGameModeBase* MainGameMode = nullptr;
+
+protected:
+	//Non-UPROPERTIES
+
+private: 
+	void RestartLevelWhenDie();
+
+private:
+	/** The restart game timer handle, used when player dies
+	or terminate loops. */
+	FTimerHandle RestartGameTimerHandle;
 
 };

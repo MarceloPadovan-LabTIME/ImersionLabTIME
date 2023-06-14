@@ -9,16 +9,18 @@
 #include "Engine/EngineTypes.h"
 #include "MyGameModeSettings.h"
 #include "LabTIMEImersionTest/MyGameModeSettings.h"
+//#include "LabTIMEImersionTest/MainPlayer/MainPlayerCharacter.h"
 
 
 
 
 ALabTIMEImersionTestGameModeBase::ALabTIMEImersionTestGameModeBase()
 {
-	// Indica qual será a classe padrão do DefaultPawn neste GameMode
+	// Indicates what will be the default DefaultPawn class in this GameMode.
 	DefaultPawnClass = AMainPlayerCharacter::StaticClass();
 
-	// Indica qual será a classe padrão do PlayerController neste GameMode
+	// Indicates what will be the default PlayerController class 
+	// in this GameMode.
 	PlayerControllerClass = AMainPlayerController::StaticClass();
 }
 
@@ -30,6 +32,11 @@ void ALabTIMEImersionTestGameModeBase::BeginPlay()
 
 	// Instance and Inicialization of a MyGameModeSettings pointer reference.
 	GameModeSettings = new MyGameModeSettings();
+
+	// Instance and inicialization of MainPlayerCharacater ptr, get the player
+	// characater in the world.
+	//MainPlayerCharacter = Cast<AMainPlayerCharacter>
+	//	(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 	// Set the initial value of player's score.
 	Score = 0;
@@ -56,18 +63,46 @@ void ALabTIMEImersionTestGameModeBase::ShowPlayersHUD()
 	CurrentWidget->AddToViewport();
 }
 
+void ALabTIMEImersionTestGameModeBase::ResetLevel()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), "Map_LabTIMEImersion");
+}
+
+void ALabTIMEImersionTestGameModeBase::CountdownTimer()
+{
+	TimerCount--;
+
+	// Stop the Countdown when the value reaches 0.
+	if (TimerCount == 0)
+	{
+		GetWorldTimerManager().ClearTimer(CountDownTimerHandle);
+
+		ResetLevel();
+	}
+}
+
+// PS: Remember to call this function in BeginPlay when ready.
 void ALabTIMEImersionTestGameModeBase::SetGameMode()
 {
 	if (GameModeSettings->bIsGameModeByTime)
 	{
 		// Ensures that the GameMode ByKills will not be true.
 		GameModeSettings->bIsGameModeByKills = false;
+
+		// Call the function who will apply the game mode rules.
+		SetGameModeByTime();
 	}
 	else if (GameModeSettings->bIsGameModeByKills)
 	{
 		// Ensures that the GameModeByTime will not be true.
 		GameModeSettings->bIsGameModeByTime = false;
 	}
+}
+
+void ALabTIMEImersionTestGameModeBase::SetGameModeByTime()
+{
+	GetWorldTimerManager().SetTimer(CountDownTimerHandle, this,
+		&ALabTIMEImersionTestGameModeBase::CountdownTimer, 1.0f, true, 1.0f);
 }
 
 void ALabTIMEImersionTestGameModeBase::SetGameModeOptions()

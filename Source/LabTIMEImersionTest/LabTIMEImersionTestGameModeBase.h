@@ -25,8 +25,14 @@ public:
 public:
 	//UFUNCTIONS.
 
+	/** Checks which game mode was chosen and calls its respective function. */
 	UFUNCTION()
 	void SetGameMode();
+
+	/** Apply the time game mode chosen by the user. */
+	UFUNCTION()
+	void SetGameModeByTime();
+
 
 	UFUNCTION()
 	void SetGameModeOptions();
@@ -46,13 +52,15 @@ public:
 public:
 	//UPROPERTIES.
 
-	/* 
+	/** 
 	* This is a class created to handle the diferrents types os variables
 	* using to setting the game modes.
 	* Here a pointer to serve as reference, and allocate values in memory.
 	*/
 	class MyGameModeSettings* GameModeSettings = nullptr;
 
+	/** Ptr to reference the main player character scripts. */
+	//class AMainPlayerCharacter* MainPlayerCharacter = nullptr;
 
 protected:
 	virtual void BeginPlay() override;
@@ -65,19 +73,34 @@ protected:
 	void ShowPlayersHUD();
 
 protected:
+	/** Handle the countdown timer value , receive from GameMode By Time */
+	UPROPERTY(BlueprintReadOnly)
+	int TimerCount = 30;
+
 	/* 
-	* Handle's with player atributes informations, like health,
+	* Handle with player atributes informations, like health,
 	* ammo/magazine and armor.
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Health")
 	TSubclassOf<class UUserWidget> PlayerHUDClass;
 
-	/** Handle's the current Widget on HUD */
+	/** Handle the current Widget on HUD */
 	UPROPERTY()
 	class UUserWidget* CurrentWidget = nullptr;
 
 private:
+	/** Reset the current level scene. */
+	void ResetLevel();
+
+	/** Countdown the time value, until reaches 0. */
+	void CountdownTimer();
+
+private:
+	/** The game countdown timer handle, when it reaches 0 the player loses. */
+	FTimerHandle CountDownTimerHandle;
+
+private:
 	/** Handles the player current score */
 	UPROPERTY()
-		int32 Score;
+	int32 Score;
 };

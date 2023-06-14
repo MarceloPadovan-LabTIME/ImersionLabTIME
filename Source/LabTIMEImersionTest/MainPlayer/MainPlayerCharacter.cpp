@@ -21,6 +21,7 @@
 #include "Engine/LatentActionManager.h"
 #include "Containers/Array.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Constructor
 AMainPlayerCharacter::AMainPlayerCharacter()
@@ -54,6 +55,97 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->GravityScale = 1.5f;
 	GetCharacterMovement()->CrouchedHalfHeight = 70.f;
+}
+
+void AMainPlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Ensures that the player character will be possess when the game starts.
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
+	SpawnWeapons();
+}
+
+void AMainPlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void AMainPlayerCharacter::SetupPlayerInputComponent
+(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	// Bind the forward and right movement of the character
+	PlayerInputComponent->BindAxis("MoveForward", this,
+		&AMainPlayerCharacter::MoveCharacterForward);
+	PlayerInputComponent->BindAxis("MoveRight", this,
+		&AMainPlayerCharacter::MoveCharacterRight);
+
+	// Bind the Sneak type movement speed of the characater
+	PlayerInputComponent->BindAction("Sneak", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::Sneak);
+	PlayerInputComponent->BindAction("Sneak", EInputEvent::IE_Released, this,
+		&AMainPlayerCharacter::StopSneaking);
+
+	// Bind the Sprint type movement of the characater
+	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::Sprint);
+	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Released, this,
+		&AMainPlayerCharacter::StopSprint);
+
+	// Bind the controller Yaw and Pitch movement 
+	PlayerInputComponent->BindAxis("Turn", this,
+		&AMainPlayerCharacter::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("LookUp", this,
+		&AMainPlayerCharacter::AddControllerPitchInput);
+
+	// Bind the crouch and uncrouch action
+	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::MyCrouch);
+	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Released, this,
+		&AMainPlayerCharacter::StandUp);
+
+	// Bind the jump action
+	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::DoubleJump);
+	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this,
+		&ACharacter::StopJumping);
+
+	// Bind the Fire with a weapon action
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::Fire);
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this,
+		&AMainPlayerCharacter::StopFiring);
+
+	// Bind the Aiming with a weapon action
+	PlayerInputComponent->BindAction("Aiming", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::Aiming);
+	PlayerInputComponent->BindAction("Aiming", EInputEvent::IE_Released, this,
+		&AMainPlayerCharacter::StopAiming);
+
+	// Bind the Weapon reload action
+	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::WeaponReload);
+
+	// Bind the Swap Weapon action
+	// Next Weapon
+	PlayerInputComponent->BindAction("SwitchNextWeapon",
+		EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::SwitchNextWeapon);
+	// Previous Weapon
+	PlayerInputComponent->BindAction("SwitchPreviousWeapon",
+		EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::SwitchPreviousWeapon);
+
+	// Bind the fixed weapon selection and hot keys.
+	PlayerInputComponent->BindAction("Weapon_1", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::SelectFirstWeapon);
+	PlayerInputComponent->BindAction("Weapon_2", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::SelectSecondWeapon);
+	PlayerInputComponent->BindAction("Weapon_3", EInputEvent::IE_Pressed, this,
+		&AMainPlayerCharacter::SelectThirdWeapon);
 }
 
 void AMainPlayerCharacter::SetHealth(float Damage)
@@ -98,6 +190,14 @@ void AMainPlayerCharacter::Die()
 	// Uses the found PlayerController object to disable player inputs.
 	// thus preventing the character from moving when dying.
 	PlayerController->GetPawn()->DisableInput(PlayerController);
+
+	GetWorldTimerManager().SetTimer(RestartGameTimerHandle, this,
+		&AMainPlayerCharacter::RestartLevelWhenDie, 8.0f, false);
+}
+
+void AMainPlayerCharacter::RestartLevelWhenDie()
+{
+	//GetGameMode and uses your RestartLevel() function.
 }
 
 void AMainPlayerCharacter::Respawn()
@@ -120,16 +220,6 @@ void AMainPlayerCharacter::DoubleJump()
 void AMainPlayerCharacter::Landed(const FHitResult& Hit)
 {
 	DoubleJumpCounter = 0;
-}
-
-void AMainPlayerCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// Ensures that the player character will be possess when the game starts.
-	AutoPossessPlayer = EAutoReceiveInput::Player0;
-
-	SpawnWeapons();
 }
 
 void AMainPlayerCharacter::SpawnWeapons()
@@ -168,87 +258,6 @@ void AMainPlayerCharacter::SpawnWeapons()
 
 	PlayerPrimaryWeapon = WeaponsArray[0];
 	PlayerPrimaryWeapon->SetActorHiddenInGame(false);
-}
-
-void AMainPlayerCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void AMainPlayerCharacter::SetupPlayerInputComponent
-	(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	// Bind the forward and right movement of the character
-	PlayerInputComponent->BindAxis("MoveForward", this, 
-		&AMainPlayerCharacter::MoveCharacterForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, 
-		&AMainPlayerCharacter::MoveCharacterRight);
-
-	// Bind the Sneak type movement speed of the characater
-	PlayerInputComponent->BindAction("Sneak", EInputEvent::IE_Pressed, this,
-		&AMainPlayerCharacter::Sneak);
-	PlayerInputComponent->BindAction("Sneak", EInputEvent::IE_Released, this,
-		&AMainPlayerCharacter::StopSneaking);
-
-	// Bind the Sprint type movement of the characater
-	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Pressed, this,
-		&AMainPlayerCharacter::Sprint);
-	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Released, this,
-		&AMainPlayerCharacter::StopSprint);
-
-	// Bind the controller Yaw and Pitch movement 
-	PlayerInputComponent->BindAxis("Turn", this, 
-		&AMainPlayerCharacter::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, 
-		&AMainPlayerCharacter::AddControllerPitchInput);
-
-	// Bind the crouch and uncrouch action
-	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Pressed, this,
-		&AMainPlayerCharacter::MyCrouch);
-	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Released, this,
-		&AMainPlayerCharacter::StandUp);
-
-	// Bind the jump action
-	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, 
-		&AMainPlayerCharacter::DoubleJump);
-	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, 
-		&ACharacter::StopJumping);
-	
-	// Bind the Fire with a weapon action
-	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this,
-		&AMainPlayerCharacter::Fire);
-	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this,
-		&AMainPlayerCharacter::StopFiring);
-
-	// Bind the Aiming with a weapon action
-	PlayerInputComponent->BindAction("Aiming", EInputEvent::IE_Pressed, this,
-		&AMainPlayerCharacter::Aiming);
-	PlayerInputComponent->BindAction("Aiming", EInputEvent::IE_Released, this,
-		&AMainPlayerCharacter::StopAiming);
-
-	// Bind the Weapon reload action
-	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this,
-		&AMainPlayerCharacter::WeaponReload);
-
-	// Bind the Swap Weapon action
-	// Next Weapon
-	PlayerInputComponent->BindAction("SwitchNextWeapon", 
-		EInputEvent::IE_Pressed, this, 
-		&AMainPlayerCharacter::SwitchNextWeapon);
-	// Previous Weapon
-	PlayerInputComponent->BindAction("SwitchPreviousWeapon",
-		EInputEvent::IE_Pressed, this, 
-		&AMainPlayerCharacter::SwitchPreviousWeapon);
-
-	// Bind the fixed weapon selection and hot keys.
-	PlayerInputComponent->BindAction("Weapon_1", EInputEvent::IE_Pressed, this,
-		&AMainPlayerCharacter::SelectFirstWeapon);
-	PlayerInputComponent->BindAction("Weapon_2", EInputEvent::IE_Pressed, this,
-		&AMainPlayerCharacter::SelectSecondWeapon);
-	PlayerInputComponent->BindAction("Weapon_3", EInputEvent::IE_Pressed, this,
-		&AMainPlayerCharacter::SelectThirdWeapon);
 }
 
 void AMainPlayerCharacter::MoveCharacterForward(float AxisValue)
@@ -440,6 +449,3 @@ void AMainPlayerCharacter::SwitchPreviousWeapon()
 	UE_LOG(LogTemp, Error, TEXT("WeaponName: %s"), 
 		*FString(PlayerPrimaryWeapon->GetWeaponName()));
 }
-
-
-
