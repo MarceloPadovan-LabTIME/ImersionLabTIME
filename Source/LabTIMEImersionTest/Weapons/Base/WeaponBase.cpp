@@ -38,19 +38,6 @@ AWeaponBase::AWeaponBase()
 		FName("MalhaDaArma"));
 	RootComponent = MalhaDaArma;
 
-	// TO DO:
-	// Find a way to create multiple variants of weapon`s type,
-	// and change your mesh.
-	/*
-	ConstructorHelpers::FObjectFinder<USkeletalMesh>Malha(TEXT
-		("SkeletalMesh'/Game/Art/Meshes/Guns/SkeletalMeshes/SkeletalM_AK47.SkeletalM_AK47'"));
-
-	if (Malha.Succeeded())
-	{
-		MalhaDaArma->SetSkeletalMesh(Malha.Object);
-	}
-	*/
-
 	WeaponArrow = CreateDefaultSubobject<UArrowComponent>(
 		FName("Seta da Arma"));
 	WeaponArrow->SetupAttachment(MalhaDaArma);
@@ -62,10 +49,7 @@ AWeaponBase::AWeaponBase()
 	AimingCameraComponent = CreateDefaultSubobject<UCameraComponent>(
 		TEXT("AimingCamera"));
 	AimingCameraComponent->SetWorldScale3D(FVector(0.25f));
-	// AimingCamera Setup Attachment it is done after weapon spawn.
-	AimingCameraComponent->AttachToComponent(Cast<USceneComponent>
-		(MalhaDaArma), FAttachmentTransformRules::SnapToTargetIncludingScale,
-		FName("Aiming_Socket"));
+	
 	AimingCameraComponent->bAutoActivate = false;
 }
 
@@ -73,16 +57,23 @@ void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// AimingCamera Setup Attachment it is done after weapon spawn.
+	AimingCameraComponent->AttachToComponent(Cast<USceneComponent>
+		(MalhaDaArma), FAttachmentTransformRules::SnapToTargetIncludingScale,
+		FName("Aiming_Socket"));
+
 	// Set the current ammunition amount as we start the game with full ammo
 	WeaponCurrentAmmunitionAmount = WeaponAmmunitionAmount;
 
-	PlayerCharacter = Cast<AMainPlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	PlayerCharacter = Cast<AMainPlayerCharacter>(GetWorld()->
+		GetFirstPlayerController()->GetPawn());
 	if (!PlayerCharacter)
 	{
 		UE_LOG(LogTemp, Error, TEXT("PlayerCharacter not found"));
 	}
 
-	CameraManager = Cast<APlayerCameraManager>(GetWorld()->GetFirstPlayerController()->PlayerCameraManager);
+	CameraManager = Cast<APlayerCameraManager>(GetWorld()->
+		GetFirstPlayerController()->PlayerCameraManager);
 	if (!CameraManager)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Player Camera Manager not found"));

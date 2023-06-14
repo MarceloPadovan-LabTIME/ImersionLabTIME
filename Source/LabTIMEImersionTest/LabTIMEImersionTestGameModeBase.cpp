@@ -9,6 +9,7 @@
 #include "Engine/EngineTypes.h"
 #include "MyGameModeSettings.h"
 #include "LabTIMEImersionTest/MyGameModeSettings.h"
+#include "Components/TextBlock.h"
 //#include "LabTIMEImersionTest/MainPlayer/MainPlayerCharacter.h"
 
 
@@ -101,6 +102,10 @@ void ALabTIMEImersionTestGameModeBase::SetGameMode()
 
 void ALabTIMEImersionTestGameModeBase::SetGameModeByTime()
 {
+	// Applies selected value to time options
+	TimerCount = GameModeSettings->
+		GameModeByTimeOptions[GameModeSettings->SelectedTimeOption];
+
 	GetWorldTimerManager().SetTimer(CountDownTimerHandle, this,
 		&ALabTIMEImersionTestGameModeBase::CountdownTimer, 1.0f, true, 1.0f);
 }

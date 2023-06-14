@@ -22,6 +22,7 @@
 #include "Containers/Array.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "LabTIMEImersionTest/LabTIMEImersionTestGameModeBase.h"
 
 // Constructor
 AMainPlayerCharacter::AMainPlayerCharacter()
@@ -198,6 +199,15 @@ void AMainPlayerCharacter::Die()
 void AMainPlayerCharacter::RestartLevelWhenDie()
 {
 	//GetGameMode and uses your RestartLevel() function.
+
+	ALabTIMEImersionTestGameModeBase* MainGameMode = Cast<ALabTIMEImersionTestGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (!MainGameMode)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Main GameMode not found."));
+	}
+
+	MainGameMode->ResetLevel();
 }
 
 void AMainPlayerCharacter::Respawn()

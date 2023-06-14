@@ -35,6 +35,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GameModes")
 	int GameModeByTimeOptions[3] = {30,60,90};
 
+	/** Index for Selected GameMode By Time Option, 0 = 30, 1 = 60, 2 = 90. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GameModes")
+	int SelectedTimeOption;
+
 	/** 
 	* If true: The rules of the current game mode will be by count of kills,
 	* there will be no time stamp, and the player must eliminate the chosen
@@ -56,5 +60,9 @@ public:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBehavior")
 		bool bAllowMovement = false;
+
+public:
+
+	
 
 };

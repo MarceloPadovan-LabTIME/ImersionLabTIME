@@ -50,7 +50,17 @@ public:
 	int32 GetScorePoints();
 
 public:
+	/** Reset the current level scene. */
+	void ResetLevel();
+
+public:
 	//UPROPERTIES.
+
+	/** Handle the countdown timer value , receive from GameMode By Time */
+	UPROPERTY(BlueprintReadWrite)
+	int TimerCount = 30;
+
+public:
 
 	/** 
 	* This is a class created to handle the diferrents types os variables
@@ -58,9 +68,6 @@ public:
 	* Here a pointer to serve as reference, and allocate values in memory.
 	*/
 	class MyGameModeSettings* GameModeSettings = nullptr;
-
-	/** Ptr to reference the main player character scripts. */
-	//class AMainPlayerCharacter* MainPlayerCharacter = nullptr;
 
 protected:
 	virtual void BeginPlay() override;
@@ -73,15 +80,13 @@ protected:
 	void ShowPlayersHUD();
 
 protected:
-	/** Handle the countdown timer value , receive from GameMode By Time */
-	UPROPERTY(BlueprintReadOnly)
-	int TimerCount = 30;
+	//UPROPERTIES.
 
 	/* 
 	* Handle with player atributes informations, like health,
 	* ammo/magazine and armor.
 	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Health")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player HUD")
 	TSubclassOf<class UUserWidget> PlayerHUDClass;
 
 	/** Handle the current Widget on HUD */
@@ -89,9 +94,6 @@ protected:
 	class UUserWidget* CurrentWidget = nullptr;
 
 private:
-	/** Reset the current level scene. */
-	void ResetLevel();
-
 	/** Countdown the time value, until reaches 0. */
 	void CountdownTimer();
 
