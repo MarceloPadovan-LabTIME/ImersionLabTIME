@@ -10,8 +10,10 @@
 #include "Particles/ParticleSystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "LabTIMEImersionTest/LabTIMEImersionTestGameModeBase.h"
+#include "LabTIMEImersionTest/MyGameModeSettings.h"
 
 // Sets default values
+// CONSTRUCTOR:
 AEnemyCharacterBase::AEnemyCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -24,17 +26,23 @@ void AEnemyCharacterBase::BeginPlay()
 	GetAWeapon();
 	PlaySpawnEFX();
 
-	/*
-	if(bAllowArmor)
-	{
-		Armor = 50.f;
-	}
-	*/
+	LoadEnemyBehaviorParams();
 }
 
 void AEnemyCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AEnemyCharacterBase::LoadEnemyBehaviorParams()
+{
+	// Uncoment this after the GameMode change is ready.
+	/*
+	if(bAllowArmor)
+	{
+	Armor = 50.f;
+	}
+	*/
 }
 
 void AEnemyCharacterBase::GetAWeapon()
@@ -59,6 +67,7 @@ void AEnemyCharacterBase::GetAWeapon()
 
 void AEnemyCharacterBase::SetHealth(float Damage)
 {
+	// Uncoment this after GameModes is ready to use.
 	/*
 	if(bAllowArmor)
 	{
@@ -92,7 +101,7 @@ float AEnemyCharacterBase::GetHealth()
 	return Health;
 }
 
-bool AEnemyCharacterBase::bIsThisCharacterDead()
+bool AEnemyCharacterBase::IsCharacterDead()
 {
 	return bIsDead;
 }
@@ -103,12 +112,12 @@ void AEnemyCharacterBase::Die()
 
 	// A flag that indicates the enemy is dead.
 	bIsDead = true;
-
-	// A delay to destroy the enemy actor, removing it from the level
-	//SetLifeSpan(5.0f);
 	
-	// removing the enemy weapon from the level too.
-	// EnemyWeapon->Destroy();
+	// Uncomment this after GameModes is ready to use.
+	//if(bAllowRespawn)
+	// {
+	//		//Add respawn TimerManager here.
+	// }
 	
 	// Uses a TimerManager to Respawn the Enemy after 5 seconds.
 	GetWorldTimerManager().SetTimer(RespawnTimerHandle, this,
@@ -121,7 +130,7 @@ void AEnemyCharacterBase::Die()
 void AEnemyCharacterBase::Respawn()
 {
 	// Debug.
-	UE_LOG(LogTemp, Warning, TEXT("New Enemy Spawned"));
+	UE_LOG(LogTemp, Warning, TEXT("Enemy Respawned"));
 
 	// Give back the life state to this character.
 	bIsDead = false;
@@ -129,10 +138,6 @@ void AEnemyCharacterBase::Respawn()
 	RespawnLocation = FVector(440, -350, 220);
 	SetActorLocation(RespawnLocation);
 	PlaySpawnEFX();
-
-	//AActor* OtherActor;
-	//AEnemySpawner* EnemySpawnerClass = Cast<AEnemySpawner>(OtherActor);
-	//EnemySpawnerClass->SpawnEnemy();
 }
 
 void AEnemyCharacterBase::PlaySpawnEFX()
@@ -150,8 +155,8 @@ void AEnemyCharacterBase::PlaySpawnEFX()
 
 void AEnemyCharacterBase::AddPlayerScore()
 {
-	//MainGameMode = Cast<ALabTIMEImersionTestGameModeBase>(UGameplayStatics::GetGameMode(MainGameMode));
 	MainGameMode = Cast<ALabTIMEImersionTestGameModeBase>(
 		GetWorld()->GetAuthGameMode());
+
 	MainGameMode->SetScorePoints(EnemyRewardScore);
 }

@@ -12,8 +12,12 @@ class LABTIMEIMERSIONTEST_API AEnemySpawner : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+	/** Sets default values for this actor's properties */
 	AEnemySpawner();
+
+public:
+	/** Called every frame */
+	virtual void Tick(float DeltaTime) override;
 
 public:
 	/** Will Spawn the Enemy BP in a pre-determinate area */
@@ -21,21 +25,17 @@ public:
 	void SpawnEnemy();
 
 protected:
-	// Called when the game starts or when spawned
+	/** Called when the game starts or when spawned */
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 protected:
 	/** Handles the EnemySpawn Area */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
-	class UBoxComponent* SpawnAreaVolume;
+	class UBoxComponent* SpawnAreaVolume = nullptr;
 
 	/** Position to Spawn the Enemy*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
-	FVector SpawnLocation;
+	FVector SpawnLocation = FVector();
 
 	/** The time in seconds to wait for new enemies to spawn  */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")

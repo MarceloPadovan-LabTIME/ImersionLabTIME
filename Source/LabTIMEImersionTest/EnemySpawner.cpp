@@ -30,7 +30,8 @@ void AEnemySpawner::BeginPlay()
 	// Spawn a Enemy after initial wait time(first SpawnEnemyTime), and repeat
 	// the function call SpawnEnemy() after seconds(second SpawnEnemyTime).
 	// TODO: Maybe create a variable for the initialWaitTime.
-	GetWorld()->GetTimerManager().SetTimer(NewEnemySpawnTimerHandle, this, &AEnemySpawner::SpawnEnemy, SpawnEnemyTime, true, SpawnEnemyTime);
+	GetWorld()->GetTimerManager().SetTimer(NewEnemySpawnTimerHandle, this,
+		&AEnemySpawner::SpawnEnemy, SpawnEnemyTime, true, SpawnEnemyTime);
 }
 
 // Called every frame

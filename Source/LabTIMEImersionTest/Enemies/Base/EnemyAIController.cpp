@@ -43,15 +43,19 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	PawnSensingComp->OnSeePawn.AddDynamic(
 		this, &AEnemyAIController::OnSeePawn);
 
-	if (BehaviorTree)
+	if (!BehaviorTree)
 	{
-		// Initiate the Blackborad and BehaviorTree.
-		BlackBoardComp->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-		BehaviorTreeComp->StartTree(*BehaviorTree);
-
-		// Now the EnemyIA start patrolling looking for the Player.
-		BlackBoardComp->SetValueAsBool("CanPatrol", true);
+		UE_LOG(LogTemp, Error, 
+			TEXT("Could not initialize, BlackboardComp has null reference."));
+		return;
 	}
+
+	// Initiate the Blackborad and BehaviorTree.
+	BlackBoardComp->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	BehaviorTreeComp->StartTree(*BehaviorTree);
+
+	// Now the EnemyIA start patrolling looking for the Player.
+	BlackBoardComp->SetValueAsBool("CanPatrol", true);
 }
 
 void AEnemyAIController::OnSeePawn(APawn* SensedPawn)
@@ -95,8 +99,5 @@ void AEnemyAIController::OnSeePawn(APawn* SensedPawn)
 			// When the Enemy see the player, He will shot.
 			Enemy->EnemyWeapon->FireWeapon();
 		}
-
 	}
-	
-	
 }

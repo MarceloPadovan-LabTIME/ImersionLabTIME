@@ -5,8 +5,9 @@
 #include "CoreMinimal.h"
 
 /**
- * 
- */
+* This class is used to save GameModes informations, like rules,
+* difficulty params, persistent data, and others.
+*/
 class LABTIMEIMERSIONTEST_API MyGameModeSettings
 {
 public:
@@ -60,5 +61,12 @@ public:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBehavior")
 	bool bAllowMovement = false;
+
+	/**
+	* If true: Enable enemies to respawn and come back to the game endlessly.
+	* This option increases the difficulty of the game.
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBehavior")
+	bool bAllowRespawn = false;
 
 };

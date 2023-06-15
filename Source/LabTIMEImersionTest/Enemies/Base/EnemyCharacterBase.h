@@ -29,7 +29,12 @@ public:
 	*/
 	class AWeaponBase* EnemyWeapon;
 
-public: 
+public:
+	/** This function checks and returns enemy behavior parameters chosen
+	by the player. */
+	UFUNCTION()
+	void LoadEnemyBehaviorParams();
+
 	/** Handles the changes of character`s Health values */
 	UFUNCTION()
 	void SetHealth(float Damage);
@@ -38,9 +43,9 @@ public:
 	UFUNCTION()
 	float GetHealth();
 
-	/* This Function return the actual state about death/alive */
+	/** This Function return the actual state about death/alive */
 	UFUNCTION()
-	bool bIsThisCharacterDead();
+	bool IsCharacterDead();
 
 	/** Handles the consequences of dying, animation, stop acting, and more */
 	UFUNCTION()
@@ -59,13 +64,20 @@ public:
 	void AddPlayerScore();
 
 public:
-
 	/** 
 	* A flag to check if the enemy still alive or not,
 	* and trigger death animation. 
 	*/
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	bool bIsDead;
+
+public:
+	/**
+	* This is a class created to handle the diferrents types os variables
+	* using to setting the game modes. In this case the Enemy Behavior.
+	* Here a pointer to serve as reference, and allocate values in memory.
+	*/
+	class MyGameModeSettings* GameModeSettingsEnemyBehavior = nullptr;
 
 protected:
 	/** Called when the game starts or when spawned */
@@ -77,29 +89,27 @@ protected:
 	void GetAWeapon();
 
 protected:
-	/* Let`s give a weapon to the enemy, like player */
+	/** Let`s give a weapon to the enemy, like player */
 	UPROPERTY(EditAnyWhere, Category = "Weapon")
 	TSubclassOf<class AWeaponBase> BP_Weapon_AssaultRifle;
 
-	/* Enemy main atribute, the health */
+	/** Enemy main atribute, the health */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
 	float Health;
 
-	/* 
+	/** 
 	* Enemy's attribute, the armor. This atribute handles the amout of damage
 	* the enemy characater can reduce before being inflicted on Health value
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
 	float Armor = 0.f;
 
-	/* 
+	/** 
 	* Armor's complementation, this value is a percentage that represents
 	* how much damage will be reduced.
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
 	float ArmorEffectiveness = 0.75f;
-
-
 
 	/** The amount of scores point the player will receive after a kill */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes")

@@ -150,7 +150,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	int32 WeaponAmmunitionAmount = 30;
 
-	/* The weapon's magazine size */
+	/** The weapon's magazine size */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
 	int32 WeaponMagazineSize = 3;
 
@@ -175,7 +175,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float ReloadTimeInterval = 3.0f;
 
-	/* Handles the time between shots */
+	/** Handles the time between shots */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
 	float ShotInterval = 0.1f;
 

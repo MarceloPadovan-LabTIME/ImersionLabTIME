@@ -23,7 +23,7 @@ protected:
 	*/
 	virtual void OnPossess(APawn* InPawn) override;
 
-	/* Create sensory functionalities(vision, audition) of an actor */
+	/** Create sensory functionalities(vision, audition) of an actor */
 	UPROPERTY(EditDefaultsOnly)
 	class UPawnSensingComponent* PawnSensingComp;
 

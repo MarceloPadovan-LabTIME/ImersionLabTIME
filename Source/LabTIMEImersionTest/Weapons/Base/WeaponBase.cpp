@@ -264,30 +264,41 @@ void AWeaponBase::SpawnMuzzleEFX()
 
 void AWeaponBase::PlayGunshotSoundEFX(FVector PlaySoundLocation)
 {
-	// Make this weapon loud - Uses sound system to spawn Shot Sound.
-	if (ShotSFX)
+	if (!ShotSFX)
 	{
-		UGameplayStatics::PlaySoundAtLocation(WeaponArrow,
-			ShotSFX, PlaySoundLocation);
+		UE_LOG(LogTemp, Error, TEXT("Could not play ShotSFX, null reference"));
+		return;
 	}
+
+	// Make this weapon loud - Uses sound system to spawn Shot Sound.
+	UGameplayStatics::PlaySoundAtLocation(WeaponArrow,
+		ShotSFX, PlaySoundLocation);
 }
 
 void AWeaponBase::PlayReloadWeaponSoundEFX(FVector PlaySoundLocation)
 {
-	if (ReloadSFX)
+	if (!ReloadSFX)
 	{
-		UGameplayStatics::PlaySoundAtLocation(WeaponArrow,
-			ReloadSFX, PlaySoundLocation);
+		UE_LOG(LogTemp, Error, 
+			TEXT("Could not play ReloadSFX, null reference"));
+		return;
 	}
+
+	UGameplayStatics::PlaySoundAtLocation(WeaponArrow,
+		ReloadSFX, PlaySoundLocation);
 }
 
 void AWeaponBase::PlayOutOfAmmoSoundEFX(FVector PlaySoundLocation)
 {
-	if (OutOfAmmoSFX)
+	if (!OutOfAmmoSFX)
 	{
-		UGameplayStatics::PlaySoundAtLocation(WeaponArrow,
-			OutOfAmmoSFX, PlaySoundLocation);
+		UE_LOG(LogTemp, Error,
+			TEXT("Could not play OutOfAmmoSFX, null reference"));
+		return;
 	}
+
+	UGameplayStatics::PlaySoundAtLocation(WeaponArrow,
+		OutOfAmmoSFX, PlaySoundLocation);
 }
 
 void AWeaponBase::HitOrganicTargets(FHitResult HitResultInfo, AActor* HitActor)
