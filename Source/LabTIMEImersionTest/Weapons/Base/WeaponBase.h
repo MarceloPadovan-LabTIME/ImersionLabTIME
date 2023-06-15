@@ -159,6 +159,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes")
 	int32 WeaponMagazineAmount = WeaponAmmunitionAmount * WeaponMagazineSize;
 
+	/** The amount of ammunition the weapon still has on it's chamber */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes")
+	int32 WeaponCurrentAmmunitionAmount = 0;
+
 	/** Manipulate the amount of damage the weapon can induce on Player */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
 	float DamageOnPlayer = 0.25f;
@@ -194,8 +198,7 @@ protected:
 	float WeaponSpreadCoef = 1.5f;
 
 protected:
-	/** The amount of ammunition the weapon still has on it's chamber */
-	int32 WeaponCurrentAmmunitionAmount = 0;
+	
 
 	/** Check if the weapon can shot*/
 	bool bIsWeaponReloading = false;

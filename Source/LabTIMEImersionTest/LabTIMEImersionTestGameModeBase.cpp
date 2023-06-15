@@ -41,6 +41,11 @@ void ALabTIMEImersionTestGameModeBase::BeginPlay()
 
 	// Set the initial value of player's score.
 	Score = 0;
+
+	// Testing the Countdown Timer:
+	TimerCount = 90;
+	GetWorldTimerManager().SetTimer(CountDownTimerHandle, this,
+		&ALabTIMEImersionTestGameModeBase::CountdownTimer, 1.0f, true, 1.0f);
 }
 
 void ALabTIMEImersionTestGameModeBase::ShowPlayersHUD()
