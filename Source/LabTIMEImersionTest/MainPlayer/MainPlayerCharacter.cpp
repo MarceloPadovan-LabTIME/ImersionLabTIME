@@ -130,7 +130,7 @@ void AMainPlayerCharacter::SetupPlayerInputComponent
 	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this,
 		&AMainPlayerCharacter::WeaponReload);
 
-	// Bind the Swap Weapon action
+	// Bind the Swap Weapon action (Mouse Scroll)
 	// Next Weapon
 	PlayerInputComponent->BindAction("SwitchNextWeapon",
 		EInputEvent::IE_Pressed, this,

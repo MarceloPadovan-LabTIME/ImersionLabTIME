@@ -106,18 +106,16 @@ void ALabTIMEImersionTestGameModeBase::SetGameModeByTime()
 	TimerCount = GameModeSettings->
 		GameModeByTimeOptions[GameModeSettings->SelectedTimeOption];
 
+	// Triggers the game countdown.
 	GetWorldTimerManager().SetTimer(CountDownTimerHandle, this,
 		&ALabTIMEImersionTestGameModeBase::CountdownTimer, 1.0f, true, 1.0f);
 }
 
-void ALabTIMEImersionTestGameModeBase::SetGameModeOptions()
-{
-
-}
-
 void ALabTIMEImersionTestGameModeBase::SetEnemyBehavior()
 {
-
+	//TO DO.
+	//Allow Movement.
+	//Allow Armor.
 }
 
 void ALabTIMEImersionTestGameModeBase::SetScorePoints(int32 value)

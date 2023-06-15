@@ -33,13 +33,10 @@ public:
 	UFUNCTION()
 	void SetGameModeByTime();
 
-
-	UFUNCTION()
-	void SetGameModeOptions();
-
+	/** Applies enemy behavior based on options chosen by the player.
+	Like movement and armor. */
 	UFUNCTION()
 	void SetEnemyBehavior();
-
 
 	/** Handles the changes in the player's score */
 	UFUNCTION()

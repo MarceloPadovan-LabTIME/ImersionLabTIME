@@ -43,6 +43,7 @@ public:
 	UFUNCTION()
 	void Respawn();
 
+	/** Handles the player's double jump action. */
 	UFUNCTION()
 	void DoubleJump();
 
@@ -128,8 +129,10 @@ public:
 	void SwitchPreviousWeapon();
 
 public:
-	/* A Array of weapons, spawned in BeginPlay, this array store all weapons
-	the player can have at same time. */
+	/** 
+	* A Array of weapons, spawned in BeginPlay, this array store all weapons
+	* the player can have at same time. 
+	*/
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
 	TArray<class AWeaponBase*> WeaponsArray;
 
@@ -220,7 +223,11 @@ protected:
 protected:
 	//Non-UPROPERTIES
 
-private: 
+private:
+	/** 
+	* This function is called when the player dies, after a few seconds,
+	* the level is reset.
+	*/
 	void RestartLevelWhenDie();
 
 private:
