@@ -156,7 +156,7 @@ void AEnemyCharacterBase::PlaySpawnEFX()
 void AEnemyCharacterBase::AddPlayerScore()
 {
 	MainGameMode = Cast<ALabTIMEImersionTestGameModeBase>(
-		GetWorld()->GetAuthGameMode());
+		UGameplayStatics::GetGameMode(GetWorld()));
 
 	MainGameMode->SetScorePoints(EnemyRewardScore);
 }

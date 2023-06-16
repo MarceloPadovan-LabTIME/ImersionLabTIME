@@ -3,10 +3,4 @@
 
 #include "MyGameModeSettings.h"
 
-MyGameModeSettings::MyGameModeSettings()
-{
-}
 
-MyGameModeSettings::~MyGameModeSettings()
-{
-}

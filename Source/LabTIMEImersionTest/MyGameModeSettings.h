@@ -11,8 +11,7 @@
 class LABTIMEIMERSIONTEST_API MyGameModeSettings
 {
 public:
-	MyGameModeSettings();
-	~MyGameModeSettings();
+	
 
 public:
 	//UFUNCTIONS.

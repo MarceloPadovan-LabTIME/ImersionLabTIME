@@ -27,20 +27,13 @@ AWeaponBase::AWeaponBase()
 
 	PrimaryActorTick.bCanEverTick = true;
 
-	// These declarations prevents Unreal from crashing.
-	MuzzleEFX = nullptr;
-	HitBloodEFX = nullptr;
-	HitHardSurfaceEFX = nullptr;
-	HitDecalVFX = nullptr;
-	ShotSFX = nullptr;
-
-	MalhaDaArma = CreateDefaultSubobject<USkeletalMeshComponent>(
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(
 		FName("MalhaDaArma"));
-	RootComponent = MalhaDaArma;
+	RootComponent = WeaponMesh;
 
 	WeaponArrow = CreateDefaultSubobject<UArrowComponent>(
 		FName("Seta da Arma"));
-	WeaponArrow->SetupAttachment(MalhaDaArma);
+	WeaponArrow->SetupAttachment(WeaponMesh);
 	WeaponArrow->SetRelativeLocation(FVector(74.f, -1.f, 10.f));
 	WeaponArrow->SetRelativeScale3D(FVector(0.3f, 0.3f, 0.3f));
 
@@ -59,7 +52,7 @@ void AWeaponBase::BeginPlay()
 
 	// AimingCamera Setup Attachment it is done after weapon spawn.
 	AimingCameraComponent->AttachToComponent(Cast<USceneComponent>
-		(MalhaDaArma), FAttachmentTransformRules::SnapToTargetIncludingScale,
+		(WeaponMesh), FAttachmentTransformRules::SnapToTargetIncludingScale,
 		FName("Aiming_Socket"));
 
 	// Set the current ammunition amount as we start the game with full ammo
@@ -80,7 +73,7 @@ void AWeaponBase::BeginPlay()
 	}
 
 	// Setup the Max Ammo for the weapon.
-	WeaponMagazineAmount = WeaponAmmunitionAmount * WeaponMagazineSize;
+	WeaponMagazineMaxAmmo = WeaponAmmunitionAmount * WeaponMagazineAmount ;
 }
 
 void AWeaponBase::Tick(float DeltaTime)
@@ -108,13 +101,6 @@ void AWeaponBase::StopFiringWeapon()
 
 void AWeaponBase::WeaponShot()
 {
-	// Needs this check to stop the auto fire on automatic weapons.
-	/*if (WeaponCurrentAmmunitionAmount <= 0)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Stopping fully auto fire, Out of Ammo!"));
-		return;
-	}*/
-
 	WeaponArrow = FindComponentByClass<UArrowComponent>();
 	if (!WeaponArrow)
 	{
@@ -191,7 +177,7 @@ void AWeaponBase::WeaponShot()
 	// Spend one ammo after shot.
 	WeaponCurrentAmmunitionAmount -= 1;
 	UE_LOG(LogTemp, Warning, TEXT("Current Ammo: %d  Current Magazine: %d"),
-		WeaponCurrentAmmunitionAmount, WeaponMagazineAmount);
+		WeaponCurrentAmmunitionAmount, WeaponMagazineMaxAmmo);
 
 	// Add SpreadValue for consecultive shots.
 	WeaponSpreadCurrentValue += WeaponSpreadCoef;
@@ -207,7 +193,7 @@ void AWeaponBase::WaitForReload()
 
 void AWeaponBase::Reload()
 {
-	if (WeaponMagazineAmount > 0 && !bIsWeaponReloading)
+	if (WeaponMagazineMaxAmmo > 0 && !bIsWeaponReloading)
 	{
 		bIsWeaponReloading = true;
 		PlayerCharacter->bIsReloadingWeapon = true;
@@ -226,12 +212,12 @@ void AWeaponBase::Reload()
 		// Ensures that when the amount of ammunition left in the magazine
 		// is less than needed for a full reload, only the remaining bullets
 		// will be reloaded. 
-		if (ReloadedBullets > WeaponMagazineAmount)
+		if (ReloadedBullets > WeaponMagazineMaxAmmo)
 		{
-			ReloadedBullets = WeaponMagazineAmount;
+			ReloadedBullets = WeaponMagazineMaxAmmo;
 		}
 
-		WeaponMagazineAmount -= ReloadedBullets;
+		WeaponMagazineMaxAmmo -= ReloadedBullets;
 
 		WeaponCurrentAmmunitionAmount += ReloadedBullets;
 	}
@@ -253,9 +239,9 @@ void AWeaponBase::SpawnMuzzleEFX()
 	}
 
 	// Uses ArrowComponent as reference to spawn Muzzle Efx.
-	FVector Loc = WeaponArrow->GetComponentLocation();
-	FRotator Rot = WeaponArrow->GetComponentRotation();
-	FVector Scale = FVector(0.5f);
+	const FVector Loc = WeaponArrow->GetComponentLocation();
+	const FRotator Rot = WeaponArrow->GetComponentRotation();
+	const FVector Scale = FVector(0.5f);
 
 	// Spawn the MuzzleEFX.
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleEFX,

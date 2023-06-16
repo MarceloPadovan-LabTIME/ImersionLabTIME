@@ -155,15 +155,12 @@ void AMainPlayerCharacter::SetHealth(float Damage)
 	if (Health > 0.0f)
 	{
 		Health -= Damage;
+		return;
 	}
 
-	// Check if the Player took enough damage to be dead.
-	else if (Health <= 0.0f)
-	{
-		//Health = 0.0f;
-		Die();
-	}
-	
+	// The player is dead now.
+	Health = 0.0f;
+	Die();
 }
 
 float AMainPlayerCharacter::GetHealth()
@@ -200,7 +197,9 @@ void AMainPlayerCharacter::RestartLevelWhenDie()
 {
 	//GetGameMode and uses your RestartLevel() function.
 
-	ALabTIMEImersionTestGameModeBase* MainGameMode = Cast<ALabTIMEImersionTestGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	ALabTIMEImersionTestGameModeBase* MainGameMode = Cast<
+		ALabTIMEImersionTestGameModeBase>(
+		UGameplayStatics::GetGameMode(GetWorld()));
 
 	if (!MainGameMode)
 	{

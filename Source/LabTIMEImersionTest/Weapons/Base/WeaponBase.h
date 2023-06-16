@@ -49,7 +49,7 @@ public:
 
 public:
 	/** Reference:Player Character to use his public variables and functions */
-	class AMainPlayerCharacter* PlayerCharacter;
+	class AMainPlayerCharacter* PlayerCharacter = nullptr;
 
 public:
 	/** First person aiming down sight camera */
@@ -96,7 +96,7 @@ protected:
 
 protected:
 	/** Ref: Acess the CameraManager to get the CameraViewport */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arma")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	class APlayerCameraManager* CameraManager = nullptr;
 
 	/** The weapon's name */
@@ -105,37 +105,37 @@ protected:
 	FString WeaponName = FString();
 
 	/** The weapon`s mesh*/
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Arma",
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon",
 		meta = (AllowPrivateAcess = "true"))
-	class USkeletalMeshComponent* MalhaDaArma;
+	class USkeletalMeshComponent* WeaponMesh = nullptr;
 
 	/** The weapon`s ArrowComponent(for fire origin and direction) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Arma",
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon",
 		meta = (AllowPrivateAcess = "true"))
-	class UArrowComponent* WeaponArrow;
+	class UArrowComponent* WeaponArrow = nullptr;
 
 	/** The weapon`s Effects(EFX) - Muzzle Flash */
 	UPROPERTY(EditAnywhere, Category = "ShotEFX")
-	class UParticleSystem* MuzzleEFX;
+	class UParticleSystem* MuzzleEFX = nullptr;
 
 	/** The weapon`s shot sound effect (SFX) */
 	UPROPERTY(EditAnywhere, Category = "ShotEFX")
-	class USoundBase* ShotSFX;
+	class USoundBase* ShotSFX = nullptr;
 
 	/** The weapon`s Hit Effect, splash blood for organic targets */
 	UPROPERTY(EditAnywhere, Category = "HitEFX")
-	class UParticleSystem* HitBloodEFX;
+	class UParticleSystem* HitBloodEFX = nullptr;
 	/** The weapon`s Hit Effect, bullet shatter for hard surface targets */
 	UPROPERTY(EditAnywhere, Category = "HitEFX")
-	class UParticleSystem* HitHardSurfaceEFX;
+	class UParticleSystem* HitHardSurfaceEFX = nullptr;
 
 	/** The weapon`s Visual Hit Effect, decals for affected surface */
 	UPROPERTY(EditAnywhere, Category = "HitEFX")
-	class UMaterialInterface* HitDecalVFX;
+	class UMaterialInterface* HitDecalVFX = nullptr;
 
 	/** The weapon`s reload sound effect (SFX) */
 	UPROPERTY(EditAnywhere, Category = "Reload")
-	class USoundBase* ReloadSFX;
+	class USoundBase* ReloadSFX = nullptr;
 
 	/** The weapon`s out of ammo sound effect (SFX) */
 	UPROPERTY(EditAnywhere, Category = "Reload")
@@ -152,12 +152,12 @@ protected:
 
 	/** The weapon's magazine size */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
-	int32 WeaponMagazineSize = 3;
+	int32 WeaponMagazineAmount = 3;
 
 	/** The weapon magazine amount of bullets rounds. 
 	(Ammo Amount * Magazine Size) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes")
-	int32 WeaponMagazineAmount = WeaponAmmunitionAmount * WeaponMagazineSize;
+	int32 WeaponMagazineMaxAmmo = WeaponAmmunitionAmount * WeaponMagazineAmount;
 
 	/** The amount of ammunition the weapon still has on it's chamber */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes")
@@ -198,8 +198,6 @@ protected:
 	float WeaponSpreadCoef = 1.5f;
 
 protected:
-	
-
 	/** Check if the weapon can shot*/
 	bool bIsWeaponReloading = false;
 

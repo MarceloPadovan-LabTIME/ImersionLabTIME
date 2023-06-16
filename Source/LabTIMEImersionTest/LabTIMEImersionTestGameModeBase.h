@@ -9,7 +9,7 @@
 
 
 /**
- * 
+ * This class is the Main GameMode, used to change and apply game rules.
  */
 
 UCLASS()
@@ -87,7 +87,7 @@ protected:
 	TSubclassOf<class UUserWidget> PlayerHUDClass;
 
 	/** Handle the current Widget on HUD */
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	class UUserWidget* CurrentWidget = nullptr;
 
 private:
@@ -100,6 +100,6 @@ private:
 
 private:
 	/** Handles the player current score */
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	int32 Score;
 };
